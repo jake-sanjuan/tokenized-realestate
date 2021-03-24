@@ -9,6 +9,28 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 // Need oracle call to verify agent
 // Need to figure out IPFS storage
 
+/*
+  Need to figure out how to verify authenticity of agent.  Ideas:
+    - KYC with license and real estate license
+    - Have owner of properties validate
+    - Have already approved agent validate data offchain after oracle call **
+    - Can also configure way to pull data from any public resource and
+      query via oracle.  Could use this to validate that person that owns property
+      to be tokenized actually owns it, and have that person validate agent.
+*/
+
+/*
+  Will proabably need to validate transactions that have happened as well.
+  A few ways to do this:
+    - Multiple approved real estate agents can validate onchain
+    - Can configure way to get data from any API, I know link does this but
+      it is moreso figuring out how to make it easy for the user / can we switch
+      out the api the oracle is calling and handle all data returned, endpoints
+      will likely differ
+    - Escrow type transaction where both seller and buyer approve transaction
+      proving that it happened
+*/
+
 contract Tokenizer is ERC721 {
 
   // Enum forSale?
@@ -27,15 +49,11 @@ contract Tokenizer is ERC721 {
   }
 
   function mint(address to) public onlyLicensed {
-    require(hasRole(AGENT_ROLE, msg.sender), "Must be licensed agent to mint.");
     _safeMint(to, tokenId);
     tokenId++;
   }
 
-  /*
-  Will likely have to have user sign transaction with address to
-  prove ownership.  Still problems with that idea, could be bad actors
-  */
+
   function approveLicense() {
     // Oracle call here
     if (true) {
