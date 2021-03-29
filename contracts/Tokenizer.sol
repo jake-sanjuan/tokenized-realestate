@@ -8,13 +8,14 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 // Need burnable function to allow properties to be taken off-chain
 // Need oracle call to verify agent
 // Need to figure out IPFS storage
+  // This will be through front end, pass token URI into contract
 // Need to verify propertyOwner
 
 /*
   Need to figure out how to verify authenticity of agent.  Ideas (Extra to Oracle):
-    - KYC with license and real estate license
-    - Have owner of properties validate
-    - Have already approved agent validate data offchain after oracle call **
+    - Have already approved agent validate data offchain after oracle call.  Will
+      involve somehow validating on front end, maybe just upload docs to IPFS with no
+      NFT?
 */
 
 /*
@@ -39,13 +40,15 @@ contract Tokenizer is ERC721 {
   mapping (address => bool) public licensed;
   mapping (address => bool) public owner;
   mapping (address => Property) public ownerToProperty;
-  mapping (Property => bool) public approvedProperties;
+  mapping (uint => Property) public tokenIdToProperty;
 
   struct Property {
     bytes32 propertyOwner; // Hash
     bytes32 propertyAddress; // Hash
-    uint tokenId;
-    bool approved;  // Approved by owner?
+    uint currentPrice;
+    bool approved;  // Approved by owner
+    bool saleApprived;
+    uint[] previousPrices;
   }
 
   public string baseURI;
@@ -63,11 +66,6 @@ contract Tokenizer is ERC721 {
     require(owner[msg.sender] == true, "Must be property owner to call function.");
   }
 
-  // Pass struct here
-  modifier onlyApproved() {
-    require(approvedProperties[])
-  }
-
   function mint(address to) external onlyPropertyOwner {
     _safeMint(msg.sender, tokenId);
     tokenId++;
@@ -76,11 +74,16 @@ contract Tokenizer is ERC721 {
   function registerProperty(
     string _propertyOwner,
     string _propertyAddress,
-
+    uint _currentPrice
     ) external onlyLicensed {
 
-
-
+      properties.push(Property({
+          propertyOwner: keccack256(_propertyOwner),
+          propertyAddress: keccak256(_propertyAddress),
+          currentPrice: _currentPrice,
+          approved: false,
+          saleApproved: false
+        }));
   }
 
 
@@ -88,6 +91,13 @@ contract Tokenizer is ERC721 {
 
   }
 
+  // Oracle call to validate and approve the property owner.  Must also be approved by agent, not one
+  // That registered property
+  function approvePropertyOwner() {
+
+  }
+
+// Oracle call will validate and approve property owner.  Must also be approved by other agent
   function approveLicense() external  {
     // Oracle call here
     if (true) {
