@@ -10,6 +10,6 @@
   },
   "dependencies": {
     "@chainlink/contracts": "^0.1.6",
-    "@openzeppelin/contracts": "^4.0.0"
+    "@openzeppelin/contracts": "^3.0.0"
   }
 }
