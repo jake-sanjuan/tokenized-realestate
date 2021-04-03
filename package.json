@@ -1,0 +1,11 @@
+{
+  "name": "stable-api",
+  "version": "1.0.0",
+  "description": "Stable api endpoint with mock data for CL nodes to access",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jake San Juan",
+  "license": "ISC"
+}
