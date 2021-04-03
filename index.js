@@ -3,8 +3,11 @@ const http = require('http');
 const app = http.createServer((request, response) => {
   response.setHeader('Content-Type', 'application/json');
 
-  if(request.url === '/agents') {
+  if(request.url === '/') {
+    response.end("Please check endpoints /owners or /agents");
+  }
 
+  if(request.url === '/agents') {
     response.end(JSON.stringify({
       'agents': [
         {
