@@ -1,14 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import Button from "./Button";
-import Logo from "../assets/logo192.png";
+import LogoLine from "../assets/logo-line.png";
+import LogoFilled from "../assets/logo-filled.png";
 
 const NavBar = () => {
+  const [hover, setHover] = useState(false);
+
   return (
     <Nav>
-      <LogoLink to="/">
-        <img src={Logo} alt="bridge-logo" />
+      <LogoLink
+        to="/"
+        onMouseEnter={() => setHover(!hover)}
+        onMouseLeave={() => setHover(!hover)}
+      >
+        {!hover && <img src={LogoLine} alt="bridge-logo" />}
+        {hover && <img src={LogoFilled} alt="bridge-logo" />}
       </LogoLink>
 
       <LinkGroup>

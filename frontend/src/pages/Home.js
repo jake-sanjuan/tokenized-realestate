@@ -12,9 +12,11 @@ const Home = () => {
           <AccentuatedText>decentralized</AccentuatedText> marketplace
         </h1>
         <p>
-          We make it easy to diversify your investments, discover new
-          properties, speed up real estate transactions, and maintain registry
-          of titles. <span>All at a lower cost.</span>
+          We make it easy to <span>diversify your investments</span>,{" "}
+          <span>discover luxury properties</span>,{" "}
+          <span>speed up processing of real estate transactions</span>, and{" "}
+          <span>maintain a registry of titles</span> at a lower cost than
+          traditional paper-driven transactions.
         </p>
         <Button to="/properties">Browse Properties</Button>
       </Hero>
@@ -44,6 +46,10 @@ const Hero = styled.section`
     margin: 0;
     margin-bottom: clamp(1rem, 2rem, 4rem);
     opacity: 0.9;
+  }
+
+  span {
+    color: ${(props) => props.theme.lilac};
   }
 
   @media only screen and (max-width: ${(props) => props.theme.breakpoints.s}) {
