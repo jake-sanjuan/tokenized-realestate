@@ -64,6 +64,12 @@ const Card = styled.article`
       rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
       rgba(0, 0, 0, 0.3) 0px 30px 60px -30px; */
   }
+  @media (max-width: 450px) {
+    width: 100%;
+  }
+  @media (max-width: 375px) {
+    width: 100%;
+  }
 `;
 
 const TopBar = styled.section`
@@ -88,6 +94,9 @@ const Image = styled.img`
   height: 320px;
   padding: 0;
   margin: 0;
+  @media (max-width: 375px) {
+    width: 100%;
+  }
 `;
 
 const Details = styled.main`
@@ -99,6 +108,9 @@ const Details = styled.main`
   align-items: center;
   border: 4px solid ${(props) => props.theme.green};
   background-color: ${(props) => props.theme.white};
+  @media (max-width: 375px) {
+    border: thin solid ${(props) => props.theme.green};
+  }
 `;
 
 const Info = styled.div`
@@ -107,6 +119,7 @@ const Info = styled.div`
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
+  margin-bottom: 1rem;
   h3 {
     font-size: clamp(1rem, 1.5rem, 2rem);
     margin: 1rem 0;
@@ -120,6 +133,9 @@ const Rows = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  :last-of-type {
+    margin-bottom: 0;
+  }
 
   p {
     text-transform: uppercase;

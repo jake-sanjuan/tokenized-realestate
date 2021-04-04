@@ -36,10 +36,14 @@ const Container = styled.div`
   grid-template-columns: repeat(auto-fit, 333px);
   grid-gap: 0 40px;
   justify-content: space-around;
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(auto-fit, 356px);
+    grid-gap: 0 8px;
+    justify-content: space-around;
+  }
   @media (max-width: 600px) {
-    margin-top: 10px;
-    display: grid;
-    grid-template-columns: repeat(2, 4fr);
-    grid-gap: 0 3%;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
   }
 `;
