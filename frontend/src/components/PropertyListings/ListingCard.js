@@ -1,11 +1,9 @@
 import React from "react";
 import styled from "styled-components";
 import Button from "../Button";
-import Container from "../Container";
 
 const ListingCard = ({ property }) => {
   const {
-    id,
     price,
     address,
     area,

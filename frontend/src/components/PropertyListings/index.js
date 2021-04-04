@@ -18,7 +18,7 @@ const PropertyList = () => {
   };
   return (
     <Container>
-      <ListingCard property={property} />
+      <ListingCard property={property} key={property.id} />
       <ListingCard property={property} />
       <ListingCard property={property} />
       <ListingCard property={property} />
