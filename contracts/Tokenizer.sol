@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: Unlicense
-pragma solidity ^0.7.0;
+pragma solidity ^0.6.0;
 
 import "hardhat/console.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
@@ -8,7 +8,7 @@ import "@chainlink/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol";
 
 // Need to figure out IPFS storage, needs to be private, Nic sent good links
   // This will be through front end
-// Add events
+// Add event params
 // Contract needs to be funded with LINK
 
 /*
@@ -29,7 +29,7 @@ import "@chainlink/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol";
 
 // Is it unsafe to assign tokenId before minting token?
 
-contract Tokenizer is ERC721, ChainlinkClient {
+contract Tokenizer is ChainlinkClient, ERC721 {
 
   AggregatorV3Interface internal priceFeed;
 
@@ -53,8 +53,7 @@ contract Tokenizer is ERC721, ChainlinkClient {
     uint[] previousPrices;
   }
 
-  public string baseURI;  // Not sure if needed, can probably be passed in directly
-  public uint tokenId;
+  uint public tokenId;
 
   address public oracle;
   bytes32 public jobId;
@@ -62,23 +61,23 @@ contract Tokenizer is ERC721, ChainlinkClient {
 
   /*TODO: Figure out params for events, decide if extra events are needed where
   events already emitted*/
-  event PropertyRegistered();
-  event AgentApprovedProperty();
-  event SaleApproved();
-  event PaymentRecieved();
-  event PropertyPriceChanged();
-  event OwnerChanged();
-  event LicenseRevoked();
-  event OwnerApproved();
-  event AgentApproved();
+  event PropertyRegistered(address indexed registeringAddress, uint indexed originalPrice);
+  event AgentApprovedProperty(address indexed agent, address indexed propertyOwner, uint indexed tokenId);
+  event SaleApproved(address indexed owner, uint indexed tokenId);
+  event PaymentRecieved(address indexed buyer, uint indexed paymentAmount, uint indexed tokenId);
+  event PropertyPriceChanged(uint indexed tokenId, uint indexed newPrice);
+  event OwnerChanged(address indexed newOwner, uint indexed tokenId);
+  event LicenseRevoked(address indexed revokedLicenseAddress);
+  event OwnerApproved(address indexed newOwnerApproved);
+  event AgentApproved(address indexed newAgentApproved);
 
-  constructor() ERC721("Property Token", "PT") {
+  constructor() public ERC721("Property Token", "PT") {
     tokenId = 0;
     setPublicChainlinkToken();
-    oracle = // Find oracle
-    jobId = // Figure out where to get jobId
-    fee = // Will depend on oracle used
-    priceFeed = AggregatorV3Interface(/*TODO: Get address for ETH USD*/);
+    oracle = 0x605C9B6f969A27982Fe1Be16e3a24F6720A14beD;// Find oracle
+    jobId = keccak256("");// Figure out where to get jobId
+    fee = 1;// Will depend on oracle used
+    priceFeed = AggregatorV3Interface(0x605C9B6f969A27982Fe1Be16e3a24F6720A14beD/*TODO: Get address for ETH USD*/);
   }
 
   modifier onlyLicensed() {
@@ -114,31 +113,28 @@ contract Tokenizer is ERC721, ChainlinkClient {
 
 
   function registerProperty (
-    string _propertyOwner,
-    string _propertyAddress,
+    string calldata _propertyOwner,
+    string calldata _propertyAddress,
     uint salt,  // Will be displayed as pin to user on frontend
-    uint _currentPrice,
-    address _propertyOwner
+    uint _currentPrice
   )
     external
     onlyPropertyOwner
   {
-    Property storage property;
+    Property storage property = awaitingApproval[msg.sender];
 
-    property.propertyOwner = keccack256(_propertyOwner + salt);
-    property.propertyAddress = keccak256(_propertyAddress + salt);
+    property.propertyOwner = keccak256(abi.encode(_propertyOwner, salt));
+    property.propertyAddress = keccak256(abi.encode(_propertyAddress, salt));
     property.currentPrice = _currentPrice;
     property.paid = false;
     property.saleApproved = false;
 
-    awaitingApproval[msg.sender] = property;
-
-    emit RegisteredProperty();
+    emit PropertyRegistered(msg.sender, _currentPrice);
   }
 
-  function approveProperty(address _propertyOwner) external onlyLicensed {
+  function approveProperty(address _propertyOwner) external onlyLicensed returns (uint) {
 
-    Property storage property = awaitingApproval[_propteryOwner];
+    Property storage property = awaitingApproval[_propertyOwner];
 
     registeringAgent[_propertyOwner] = msg.sender;
     ownerToIdToPropertyApproved[_propertyOwner][tokenId] = property;
@@ -147,7 +143,7 @@ contract Tokenizer is ERC721, ChainlinkClient {
 
     delete(awaitingApproval[_propertyOwner]);
 
-    emit AgentApprovedProperty();
+    emit AgentApprovedProperty(msg.sender, _propertyOwner, tokenId - 1);
 
     return tokenId - 1;
   }
@@ -155,17 +151,17 @@ contract Tokenizer is ERC721, ChainlinkClient {
   //Emits "Transfer" event via "mint()" function
   function mintProperty(
     uint _tokenId,
-    string _propertyOwner,
-    string _propertyAddress,
+    string calldata _propertyOwner,
+    string calldata _propertyAddress,
     uint salt
   )
     external
     onlyPropertyOwner
   {
-    Property storage property = ownerToIdProperty[msg.sender][_tokenId];
+    Property storage property = ownerToIdToPropertyApproved[msg.sender][_tokenId];
 
-    require(property.propertyOwner == keccack256(_propertyOwner + salt) &&
-      property.propertyAddress == keccack256(_propertyAddress + salt),
+    require(property.propertyOwner == keccak256(abi.encode(_propertyOwner, salt)) &&
+      property.propertyAddress == keccak256(abi.encode(_propertyAddress, salt)),
       "Function caller does not own property with that ID"
     );
 
@@ -176,22 +172,22 @@ contract Tokenizer is ERC721, ChainlinkClient {
     Property storage property = ownerToIdToPropertyApproved[msg.sender][_tokenId];
 
     property.saleApproved = true;
-    emit SaleApproved();
+    emit SaleApproved(msg.sender, _tokenId);
   }
 
   // Need functionality to accept payment and route to agent so they can actually sell
   // Escrow somehow?
-  function payment(uint _tokenId, address owner) external payable onlyNewOwner {
-    Property storage property = ownerToIdToPropertyApproved[owner][_tokenId];
+  function payment(uint _tokenId, address propertyOwner) external payable onlyNewOwner {
+    Property storage property = ownerToIdToPropertyApproved[propertyOwner][_tokenId];
 
     require(msg.value == property.currentPrice, "Must send exact amount");
 
     property.paid = true;
 
-    emit PaymentRecieved();
+    emit PaymentRecieved(msg.sender, msg.value, _tokenId);
   }
 
-  // Idea is that agent will receive ether and send to owner.  Need to figure out how to stop bad actors
+
   // emits Transfer event ERC721
   function sell(
     address _from,
@@ -205,13 +201,13 @@ contract Tokenizer is ERC721, ChainlinkClient {
     require(property.saleApproved, "Owner must have approved sale");
     require(property.paid, "Payment to contract must be received before function call");
 
-    safeTransfer(_from, _to, _tokenId);
-    _from.transfer(property.currentPrice);
+    safeTransferFrom(_from, _to, _tokenId);
+    payable(_from).transfer(property.currentPrice);
 
     property.saleApproved = false;
     property.paid = false;
 
-    ownerToPropertyId[_to][_tokenId] = property;
+    ownerToIdToPropertyApproved[_to][_tokenId] = property;
 
     delete(ownerToIdToPropertyApproved[_from][_tokenId]);
     newOwner[_to] = true;
@@ -221,41 +217,42 @@ contract Tokenizer is ERC721, ChainlinkClient {
   // Might need to look at functionality here, would make sense to split to two functions
   // Second would be internal and automatically execute when property.priceChangeCount == 2
   function changeCurrentPrice(
-    address owner,
+    address propertyOwner,
     uint _tokenId,
     uint newPrice
   )
     external
     licensedOrOwner
   {
-    Property storage property = ownerToIdToPropertyApproved[owner][_tokenId];
+    Property storage property = ownerToIdToPropertyApproved[propertyOwner][_tokenId];
 
-    property.changePriceCount++
+    property.changePriceCount++;
 
     if (property.changePriceCount == 2) {
       property.previousPrices.push(property.currentPrice);
       property.currentPrice = newPrice;
       property.changePriceCount = 0;
-      emit PropertyPriceChanged();
+      emit PropertyPriceChanged(_tokenId, newPrice);
     }
   }
 
-  function changeOwner(string newOwnerName, uint salt, uint _tokenId) external onlyNewOwner {
+  // Definitely need to map newOwner to property they are allowed to change owner for
+  function changeOwner(string calldata newOwnerName, uint salt, uint _tokenId) external onlyNewOwner {
     Property storage property = ownerToIdToPropertyApproved[msg.sender][tokenId];
-    property.propertyOwner = keccak256(newOwnerName + salt);
+    property.propertyOwner = keccak256(abi.encode(newOwnerName, salt));
     newOwner[msg.sender] = false;
     owner[msg.sender] = true;
-    emit OwnerChanged();
+    emit OwnerChanged(msg.sender, _tokenId);
   }
 
   // Emits Transfer event
   function burn(uint _tokenId) external onlyPropertyOwner {
-    _burn(tokenId);
+    _burn(_tokenId);
   }
 
   function revokeLicense() external onlyLicensed {
     licensed[msg.sender] = false;
-    emit LicenseRevoked();
+    emit LicenseRevoked(msg.sender);
   }
 
   // Oracle call to validate and approve the property owner.  Must also be approved by agent, not one
@@ -267,9 +264,9 @@ contract Tokenizer is ERC721, ChainlinkClient {
     approvedByAgent(_potentialOwner)
   {
     requestOwnerData();
-    if(/*Oracle call works*/) {
+    if(true/*Oracle call works*/) {
       owner[msg.sender] = true;
-      emit OwnerApproved();
+      emit OwnerApproved(_potentialOwner);
     }
   }
 
@@ -283,9 +280,9 @@ contract Tokenizer is ERC721, ChainlinkClient {
   {
 
     requestAgentData();
-    if (/*Oracle call works*/) {
+    if (true/*Oracle call works*/) {
       licensed[msg.sender] = true;
-      emit AgentApproved();
+      emit AgentApproved(_potentialAgent);
     }
   }
 
@@ -301,16 +298,17 @@ contract Tokenizer is ERC721, ChainlinkClient {
   //Emits ChainlinkFulfilled event
   function fulfill(
     bytes32 _requestId,
+    bool response
     /*TODO: Add type here*/
   )
     external
-    recordChainlinkFulfillment
+    recordChainlinkFulfillment(_requestId)
   {
     /*TODO: Return info, bool?*/
   }
 
-  function homeValueEthToUsd(uint tokenId, address owner) external view returns (uint) {
-    Property memory property = ownerToIdToPropertyApproved[owner][_tokenId];
+  function homeValueEthToUsd(uint _tokenId, address propertyOwner) external view returns (int) {
+    Property memory property = ownerToIdToPropertyApproved[propertyOwner][_tokenId];
 
     (
         uint80 roundId,
@@ -319,7 +317,7 @@ contract Tokenizer is ERC721, ChainlinkClient {
         uint timestamp,
         uint80 answeredInRound
     ) = priceFeed.latestRoundData();
-    return price * property.currentPrice;
+    return price * int(property.currentPrice);
   }
 
   // Might not be able to be internal
@@ -328,10 +326,10 @@ contract Tokenizer is ERC721, ChainlinkClient {
 
     Chainlink.Request memory request = buildChainlinkRequest(jobId, address(this), this.fulfill.selector);
 
-    request.add("get", /*TODO: Add Path*/);
-    request.add("path", /*TODO: Destructure JSON*/);
+    request.add("get", ""/*TODO: Add Path*/);
+    request.add("path", ""/*TODO: Destructure JSON*/);
 
-    return sendChainlinkRequest(oracle, request, fee);
+    return sendChainlinkRequestTo(oracle, request, fee);
   }
 
   // Might not be able to be internal
@@ -340,10 +338,10 @@ contract Tokenizer is ERC721, ChainlinkClient {
 
     Chainlink.Request memory request = buildChainlinkRequest(jobId, address(this), this.fulfill.selector);
 
-    request.add("get", /*TODO: Add Path*/);
-    request.add("path", /*TODO: Destructure JSON*/);
+    request.add("get", ""/*TODO: Add Path*/);
+    request.add("path", ""/*TODO: Destructure JSON*/);
 
-    return sendChainlinkRequest(oracle, request, fee);
+    return sendChainlinkRequestTo(oracle, request, fee);
   }
 
   // Emits ERC721 "Transfer" event
