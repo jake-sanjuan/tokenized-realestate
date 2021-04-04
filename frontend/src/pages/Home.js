@@ -18,7 +18,7 @@ const Home = () => {
           <span>maintain a registry of titles</span> at a lower cost than
           traditional paper-driven transactions.
         </p>
-        <Button to="/properties">Browse Properties</Button>
+        <Button to="/buy">Browse Properties</Button>
       </Hero>
     </Container>
   );
@@ -65,10 +65,11 @@ const AccentuatedText = styled.span`
   font-family: aktiv-grotesk, sans-serif;
   font-style: normal;
   font-weight: 600;
+  margin: 0;
   font-size: clamp(1rem, 5rem, 7rem);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   @media only screen and (max-width: 650px) {
-    font-size: clamp(0.8rem, 1rem, 3rem);
+    font-size: clamp(1rem, 1.5rem, 3rem) !important;
   }
 `;

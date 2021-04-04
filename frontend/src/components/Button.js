@@ -36,9 +36,9 @@ const Button = styled(Link)`
       inset -20px 0 80px ${(props) => props.theme.lilac},
       inset 20px 0 300px ${(props) => props.theme.lilac},
       inset -20px 0 300px ${(props) => props.theme.lilac},
-      0 0 20px ${(props) => props.theme.lilac},
-      -5px 0 40px ${(props) => props.theme.lilac},
-      5px 0 40px ${(props) => props.theme.lilac};
+      0 0 20px ${(props) => props.theme.neon},
+      -5px 0 40px ${(props) => props.theme.neon},
+      5px 0 40px ${(props) => props.theme.neon};
   }
   ${(props) =>
     props.primarySmall &&
@@ -46,6 +46,26 @@ const Button = styled(Link)`
       padding: 0.8rem 1.5rem;
       @media only screen and (max-width: 650px) {
         padding: 0.6rem 0.8rem;
+      }
+    `}
+  ${(props) =>
+    props.secondarySmall &&
+    css`
+      padding: 0.8rem 1.5rem;
+      @media only screen and (max-width: 650px) {
+        padding: 0.6rem 0.8rem;
+      }
+      :hover {
+        background: ${(props) => props.theme.neon};
+        color: ${(props) => props.theme.black};
+        box-shadow: inset 0 0 60px ${(props) => props.theme.neon},
+          inset 20px 0 80px ${(props) => props.theme.neon},
+          inset -20px 0 80px ${(props) => props.theme.neon},
+          inset 20px 0 300px ${(props) => props.theme.neon},
+          inset -20px 0 300px ${(props) => props.theme.neon},
+          0 0 10px ${(props) => props.theme.lilac},
+          -2.5px 0 10px ${(props) => props.theme.lilac},
+          2.5px 0 10px ${(props) => props.theme.lilac};
       }
     `}
 `;

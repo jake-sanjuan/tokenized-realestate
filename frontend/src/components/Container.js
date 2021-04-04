@@ -5,6 +5,7 @@ const Container = styled.main`
   flex-direction: column;
   margin: 0;
   padding: clamp(2rem, 4rem, 6rem);
+  background-color: ${(props) => props.theme.white};
   @media only screen and (max-width: ${(props) => props.theme.breakpoints.s}) {
     padding: clamp(0.8rem, 1rem, 2rem);
     align-items: center;
@@ -14,16 +15,13 @@ const Container = styled.main`
     props.black &&
     css`
       background-color: ${(props) => props.theme.black};
+      color: ${(props) => props.theme.white};
     `}
   ${(props) =>
     props.green &&
     css`
       background-color: ${(props) => props.theme.green};
-    `}
-  ${(props) =>
-    props.white &&
-    css`
-      background-color: ${(props) => props.theme.white};
+      color: ${(props) => props.theme.white};
     `}
 `;
 

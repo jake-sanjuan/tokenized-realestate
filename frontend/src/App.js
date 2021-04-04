@@ -8,6 +8,7 @@ import Sell from "./pages/Sell";
 import Agents from "./pages/Agents";
 import Account from "./pages/Account";
 import Light from "./styles/theme";
+import Footer from "./components/Footer";
 
 const App = () => {
   return (
@@ -21,6 +22,7 @@ const App = () => {
           <Route path="/agents" component={Agents} />
           <Route path="/account" component={Account} />
         </Switch>
+        <Footer />
       </Router>
     </ThemeProvider>
   );
