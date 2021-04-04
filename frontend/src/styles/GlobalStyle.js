@@ -1,13 +1,20 @@
 import { createGlobalStyle } from "styled-components";
 
 const GlobalStyle = createGlobalStyle`
-@import url("https://use.typekit.net/pgn2kgo.css");
+
+  html, body{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+  }
  
   h1 {
     font-family: orpheuspro, serif;
     font-style: italic;
     font-weight: normal;
-    font-size: 144px;
+    font-size: 96px;
+    line-height: 96px;
+    letter-spacing: 0;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -15,7 +22,7 @@ const GlobalStyle = createGlobalStyle`
     font-family: orpheuspro, serif;
     font-style: normal;
 font-weight: bold;
-font-size: 96px;
+font-size: 64px;
 -webkit-font-smoothing: antialiased;
 -moz-osx-font-smoothing: grayscale;
   }
@@ -23,7 +30,7 @@ font-size: 96px;
     font-family: aktiv-grotesk, sans-serif;
     font-style: normal;
 font-weight: 500;
-font-size: 64px;
+font-size: 48px;
 -webkit-font-smoothing: antialiased;
 -moz-osx-font-smoothing: grayscale;
   }
@@ -31,7 +38,7 @@ font-size: 64px;
     font-family: aktiv-grotesk, sans-serif;
 font-weight: 500;
 font-style: normal;
-font-size: 48px;
+font-size: 36px;
 -webkit-font-smoothing: antialiased;
 -moz-osx-font-smoothing: grayscale;
   }
@@ -39,7 +46,7 @@ font-size: 48px;
     font-family: aktiv-grotesk, sans-serif;
     font-weight: 500;
 font-style: normal;
-    font-size: 36px;
+    font-size: 24px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -54,7 +61,7 @@ text-transform: uppercase;
   }
 
   p{
-    font-family: brandon-grotesque, sans-serif;
+    font-family: aktiv-grotesk, sans-serif;
     font-weight: 400;
 font-style: normal;
 font-size: 18px;
