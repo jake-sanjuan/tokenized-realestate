@@ -1,0 +1,16 @@
+type Owner @entity {
+  id: ID!
+  ownedProperties: [ Property! ]
+}
+
+type Agent @entity {
+  id: ID!
+}
+
+type Property @entity {
+  id: ID!
+  propertyOwner: Owner!
+  currentPrice: BigInt!
+  agent: Agent
+  approved: Boolean!
+}

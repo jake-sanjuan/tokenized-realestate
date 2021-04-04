@@ -1,0 +1,65 @@
+specVersion: 0.0.2
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: Tokenizer
+    network: ropsten
+    source:
+      address: "0xD02C513472A7BA8ca4532642f390DdBA4249516E"
+      abi: Tokenizer
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - AgentApproved
+        - AgentApprovedProperty
+        - Approval
+        - ApprovalForAll
+        - ChainlinkCancelled
+        - ChainlinkFulfilled
+        - ChainlinkRequested
+        - LicenseRevoked
+        - OwnerApproved
+        - OwnerChanged
+        - PaymentRecieved
+        - PropertyPriceChanged
+        - PropertyRegistered
+        - SaleApproved
+        - Transfer
+      abis:
+        - name: Tokenizer
+          file: ./abis/Tokenizer.json
+      eventHandlers:
+        - event: AgentApproved(indexed address)
+          handler: handleAgentApproved
+        - event: AgentApprovedProperty(indexed address,indexed address,indexed uint256)
+          handler: handleAgentApprovedProperty
+        - event: Approval(indexed address,indexed address,indexed uint256)
+          handler: handleApproval
+        - event: ApprovalForAll(indexed address,indexed address,bool)
+          handler: handleApprovalForAll
+        - event: ChainlinkCancelled(indexed bytes32)
+          handler: handleChainlinkCancelled
+        - event: ChainlinkFulfilled(indexed bytes32)
+          handler: handleChainlinkFulfilled
+        - event: ChainlinkRequested(indexed bytes32)
+          handler: handleChainlinkRequested
+        - event: LicenseRevoked(indexed address)
+          handler: handleLicenseRevoked
+        - event: OwnerApproved(indexed address)
+          handler: handleOwnerApproved
+        - event: OwnerChanged(indexed address,indexed uint256)
+          handler: handleOwnerChanged
+        - event: PaymentRecieved(indexed address,indexed uint256,indexed uint256)
+          handler: handlePaymentRecieved
+        - event: PropertyPriceChanged(indexed uint256,indexed uint256)
+          handler: handlePropertyPriceChanged
+        - event: PropertyRegistered(indexed address,indexed uint256)
+          handler: handlePropertyRegistered
+        - event: SaleApproved(indexed address,indexed uint256)
+          handler: handleSaleApproved
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+      file: ./src/mapping.ts
