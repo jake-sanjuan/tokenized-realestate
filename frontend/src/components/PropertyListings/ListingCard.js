@@ -21,7 +21,7 @@ const ListingCard = ({ property }) => {
         <p>2 Days Remaining</p>
       </TopBar>
       <Details>
-        <Image src="https://source.unsplash.com/featured/?luxury,house" />
+        <Image src="https://source.unsplash.com/featured/300x300?luxury,house" />
         <Info>
           <h3>{address}</h3>
           <Rows>

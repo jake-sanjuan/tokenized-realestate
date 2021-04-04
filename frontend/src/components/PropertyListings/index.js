@@ -39,7 +39,7 @@ const Container = styled.div`
   @media (max-width: 768px) {
     grid-template-columns: repeat(auto-fit, 356px);
     grid-gap: 0 8px;
-    justify-content: space-around;
+    /* justify-content: space-around; */
   }
   @media (max-width: 600px) {
     display: flex;

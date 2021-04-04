@@ -6,7 +6,7 @@ import PropertyList from "../components/PropertyListings";
 const Buy = () => {
   return (
     <Container>
-      <h1>Find your future home.</h1>
+      <h1 style={{ alignSelf: "center" }}>Find your future home.</h1>
       <PropertyList />
     </Container>
   );

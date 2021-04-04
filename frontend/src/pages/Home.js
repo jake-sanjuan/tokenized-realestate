@@ -14,7 +14,7 @@ const Home = () => {
         <p>
           We make it easy to <span>diversify your investments</span>,{" "}
           <span>discover luxury properties</span>,{" "}
-          <span>speed up processing of real estate transactions</span>, and{" "}
+          <span>process real estate transactions faster</span>, and{" "}
           <span>maintain a registry of titles</span> at a lower cost than
           traditional paper-driven transactions.
         </p>
@@ -25,6 +25,19 @@ const Home = () => {
 };
 
 export default Home;
+
+const AccentuatedText = styled.span`
+  font-family: aktiv-grotesk, sans-serif !important;
+  font-style: normal !important;
+  font-weight: 600 !important;
+  margin: 0;
+  font-size: clamp(1rem, 5rem, 7rem) !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  @media only screen and (max-width: 650px) {
+    font-size: clamp(1rem, 1.5rem, 3rem) !important;
+  }
+`;
 
 const Hero = styled.section`
   display: flex;
@@ -46,10 +59,24 @@ const Hero = styled.section`
     margin: 0;
     margin-bottom: clamp(1rem, 2rem, 4rem);
     opacity: 0.9;
+    @media (max-width: 450px) {
+      width: 100%;
+      line-height: 1;
+    }
   }
 
   span {
     color: ${(props) => props.theme.lilac};
+    font-family: orpheuspro, sans-serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(1rem, 2rem, 3rem); /* filter: drop-shadow(0px 0.8px 4px ${(
+      props
+    ) => props.theme.neon}); */
+    @media (max-width: 450px) {
+      width: 100%;
+      line-height: 1;
+    }
   }
 
   @media only screen and (max-width: ${(props) => props.theme.breakpoints.s}) {
@@ -58,18 +85,5 @@ const Hero = styled.section`
       font-size: clamp(1rem, 2rem, 3rem);
       line-height: clamp(1rem, 2rem, 3rem);
     }
-  }
-`;
-
-const AccentuatedText = styled.span`
-  font-family: aktiv-grotesk, sans-serif;
-  font-style: normal;
-  font-weight: 600;
-  margin: 0;
-  font-size: clamp(1rem, 5rem, 7rem);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  @media only screen and (max-width: 650px) {
-    font-size: clamp(1rem, 1.5rem, 3rem) !important;
   }
 `;

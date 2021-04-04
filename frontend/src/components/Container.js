@@ -11,6 +11,9 @@ const Container = styled.main`
     align-items: center;
     justify-content: center;
   }
+  @media (max-width: 768px) {
+    overflow-x: hidden;
+  }
   ${(props) =>
     props.black &&
     css`
