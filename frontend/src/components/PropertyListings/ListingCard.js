@@ -4,6 +4,7 @@ import Button from "../Button";
 
 const ListingCard = ({ property }) => {
   const {
+    id,
     price,
     address,
     area,
@@ -12,7 +13,6 @@ const ListingCard = ({ property }) => {
     baths,
     exteriorSize,
     bids,
-    url,
   } = property;
   return (
     <Card>
@@ -37,7 +37,7 @@ const ListingCard = ({ property }) => {
             <p className="bold">{bids} Bids</p>
           </Rows>
         </Info>
-        <Button secondarySmall to={url}>
+        <Button secondarySmall to={`/buy/property/${id}`}>
           View Property
         </Button>
       </Details>

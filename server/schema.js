@@ -42,7 +42,6 @@ const typeDefs = gql`
     owner: User!
     agent: User!
     "URL for property listing page"
-    url: String!
     "Number of bids"
     bids: Int
   }
