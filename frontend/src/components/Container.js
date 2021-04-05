@@ -4,7 +4,7 @@ const Container = styled.main`
   display: flex;
   flex-direction: column;
   margin: 0;
-  padding: clamp(2rem, 4rem, 6rem);
+  padding: clamp(1rem, 3rem, 6rem);
   background-color: ${(props) => props.theme.white};
   @media only screen and (max-width: ${(props) => props.theme.breakpoints.s}) {
     padding: clamp(0.8rem, 1rem, 2rem);

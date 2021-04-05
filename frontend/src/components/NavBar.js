@@ -22,7 +22,7 @@ const NavBar = () => {
       <LinkGroup>
         <NavLink to="/buy">Buy</NavLink>
         <NavLink to="/sell">Sell</NavLink>
-        <Button to="/account" primarySmall>
+        <Button to="/account" secondary>
           Connect Wallet
         </Button>
       </LinkGroup>
@@ -74,7 +74,7 @@ const LogoLink = styled(Link)`
 //   flex-direction: row;
 //   align-items: center;
 //   padding: 0.6rem 1.5rem !important;
-//   font-family: aktiv-grotesk, sans-serif;
+//   font-family: termina, sans-serif;
 //   font-style: normal;
 //   font-weight: 700;
 //   font-size: 16px;
@@ -134,7 +134,7 @@ const LinkGroup = styled.div`
   align-items: center;
   justify-content: space-evenly;
   span {
-    font-family: aktiv-grotesk, sans-serif;
+    font-family: termina, sans-serif;
     font-style: normal;
     font-weight: 700;
     font-size: 16px;
@@ -149,7 +149,7 @@ const LinkGroup = styled.div`
 const NavLink = styled(Link)`
   color: ${(props) => props.theme.white};
   text-decoration: none;
-  font-family: aktiv-grotesk, sans-serif;
+  font-family: termina, sans-serif;
   font-weight: 700;
   font-style: normal;
   -webkit-font-smoothing: antialiased;
@@ -161,7 +161,7 @@ const NavLink = styled(Link)`
   transition: all 0.3s ease;
   &:hover,
   :active {
-    color: ${(props) => props.theme.lilac};
+    color: ${(props) => props.theme.neon};
   }
   @media (max-width: 600px) {
     margin: 0 8px 0 0;

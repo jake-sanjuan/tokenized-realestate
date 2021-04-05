@@ -2,22 +2,36 @@ import React from "react";
 import styled from "styled-components";
 import Button from "../components/Button";
 import Container from "../components/Container";
+import Investments from "../assets/graphics/investments.svg";
+import Discover from "../assets/graphics/eye.svg";
+import Faster from "../assets/graphics/faster.svg";
+import Registry from "../assets/graphics/registry.svg";
 
 const Home = () => {
   return (
     <Container green>
       <Hero>
-        <h1>
-          Buy and sell real estate in a{" "}
-          <AccentuatedText>decentralized</AccentuatedText> marketplace
-        </h1>
-        <p>
-          We make it easy to <span>diversify your investments</span>,{" "}
-          <span>discover luxury properties</span>,{" "}
-          <span>process real estate transactions faster</span>, and{" "}
-          <span>maintain a registry of titles</span> at a lower cost than
-          traditional paper-driven transactions.
-        </p>
+        <Line>
+          <p>We make it easy to</p>
+        </Line>
+        <Line>
+          <img src={Investments} alt="diverse-investment" />
+          <h3>diversify your investments,</h3>
+        </Line>
+        <Line>
+          <h3>discover new properties,</h3>
+          <img src={Discover} alt="discover-new" />
+        </Line>
+        <Line>
+          <img src={Faster} alt="faster-processing" />
+          <h3>process real estate transactions faster,</h3>
+        </Line>
+        <Line>
+          <p>&</p>
+          <h3>maintain a registry of titles.</h3>
+          <img src={Registry} alt="protected-registry" />
+        </Line>
+        <h4>Decentralized. Faster. Lower Cost.</h4>
         <Button to="/buy">Browse Properties</Button>
       </Hero>
     </Container>
@@ -26,64 +40,66 @@ const Home = () => {
 
 export default Home;
 
-const AccentuatedText = styled.span`
-  font-family: aktiv-grotesk, sans-serif !important;
-  font-style: normal !important;
-  font-weight: 600 !important;
-  margin: 0;
-  font-size: clamp(1rem, 5rem, 7rem) !important;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+const Line = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin: 0 1rem;
+  p {
+    text-transform: uppercase;
+    font-family: termina, sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    letter-spacing: 0.05;
+    font-size: 1rem;
+    padding: 0;
+  }
+  img {
+    padding: 8px;
+    margin: 0 1rem;
+  }
   @media only screen and (max-width: 650px) {
-    font-size: clamp(1rem, 1.5rem, 3rem) !important;
+    flex-direction: column;
+    img {
+      height: 2rem;
+    }
+    :nth-of-type(even) {
+      flex-direction: column-reverse;
+    }
   }
 `;
 
 const Hero = styled.section`
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-  width: clamp(95%, 85%, 100%);
-  height: 100vh;
-  h1 {
-    color: ${(props) => props.theme.white};
-    line-height: 1;
-    margin: 0;
-    margin-top: 4rem;
-    margin-bottom: clamp(0.5rem, 1rem, 2rem);
+  justify-content: center;
+  align-items: center;
+  h3 {
+    font-size: 3rem;
+  }
+  h4 {
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+    text-align: center;
   }
   p {
-    color: ${(props) => props.theme.white};
-    width: 80%;
-    margin: 0;
-    margin-bottom: clamp(1rem, 2rem, 4rem);
-    opacity: 0.9;
-    @media (max-width: 450px) {
-      width: 100%;
-      line-height: 1;
-    }
+    text-align: center;
   }
-
-  span {
-    color: ${(props) => props.theme.lilac};
-    font-family: orpheuspro, sans-serif;
-    font-style: italic;
-    font-weight: 400;
-    font-size: clamp(1rem, 2rem, 3rem); /* filter: drop-shadow(0px 0.8px 4px ${(
-      props
-    ) => props.theme.neon}); */
-    @media (max-width: 450px) {
-      width: 100%;
-      line-height: 1;
+  div {
+    :last-of-type {
+      margin-bottom: 1rem;
     }
-  }
-
-  @media only screen and (max-width: ${(props) => props.theme.breakpoints.s}) {
-    span {
-      margin-bottom: clamp(0.2rem, 0.5rem, 1rem);
-      font-size: clamp(1rem, 2rem, 3rem);
-      line-height: clamp(1rem, 2rem, 3rem);
+    @media only screen and (max-width: 650px) {
+      p {
+        font-size: clamp(0.6rem, 0.8rem, 1rem);
+      }
+      h3 {
+        font-size: clamp(1.2rem, 1.5rem, 1.8rem);
+      }
+      h4 {
+        font-size: clamp(0.6rem, 0.8rem, 1rem) !important;
+      }
     }
   }
 `;

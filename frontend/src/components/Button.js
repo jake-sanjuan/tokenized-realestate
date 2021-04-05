@@ -8,7 +8,7 @@ const Button = styled(Link)`
   justify-content: center !important;
   text-align: center;
   padding: 1.5rem 2rem;
-  font-family: aktiv-grotesk, sans-serif;
+  font-family: termina, sans-serif;
   font-style: normal;
   font-weight: 700;
   font-size: clamp(0.5rem, 1rem, 2rem);
@@ -46,6 +46,23 @@ const Button = styled(Link)`
       padding: 0.8rem 1.5rem;
       @media only screen and (max-width: 650px) {
         padding: 0.6rem 0.8rem;
+      }
+    `}
+  ${(props) =>
+    props.secondary &&
+    css`
+      color: ${(props) => props.theme.white};
+      background-color: ${(props) => props.theme.green};
+      border: thin solid ${(props) => props.theme.white};
+      padding: 0.8rem 1.5rem;
+      :hover {
+        color: ${(props) => props.theme.green};
+        background-color: ${(props) => props.theme.lilac};
+        border: thin solid ${(props) => props.theme.neon};
+        box-shadow: none;
+      }
+      @media only screen and (max-width: 650px) {
+        padding: 0.4rem 0.6rem;
       }
     `}
   ${(props) =>
