@@ -4,9 +4,9 @@ import { gql, useQuery } from "@apollo/client";
 import QueryResult from "../QueryResult";
 import ListingCard from "./ListingCard";
 
-const PROPERTIES = gql`
+const GET_ALL_PROPERTIES = gql`
   query {
-    buyPage {
+    properties {
       id
       address
       area
@@ -20,12 +20,12 @@ const PROPERTIES = gql`
 `;
 
 const PropertyList = () => {
-  const { loading, error, data } = useQuery(PROPERTIES);
+  const { loading, error, data } = useQuery(GET_ALL_PROPERTIES);
   console.log(data);
   return (
     <Container grid>
       <QueryResult error={error} data={data} loading={loading}>
-        {data?.buyPage?.map((property) => {
+        {data?.properties?.map((property) => {
           return <ListingCard key={property.id} property={property} />;
         })}
       </QueryResult>

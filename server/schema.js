@@ -3,7 +3,7 @@ const { gql } = require("apollo-server");
 const typeDefs = gql`
   type Query {
     "Query for Buy Page, where all properties are listed"
-    buyPage: [Property!]!
+    properties: [Property!]!
   }
 
   "A User can be a Buyer, Seller or Real Estate Agent"
@@ -41,7 +41,6 @@ const typeDefs = gql`
     title: String
     owner: User!
     agent: User!
-    "URL for property listing page"
     "Number of bids"
     bids: Int
   }

@@ -3,7 +3,7 @@ const typeDefs = require("./schema");
 
 const mocks = {
   Query: () => ({
-    buyPage: () => new MockList([6, 9]),
+    properties: () => new MockList([6, 9]),
   }),
   Property: () => ({
     id: () => "property-01",
