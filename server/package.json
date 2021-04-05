@@ -1,0 +1,26 @@
+{
+  "name": "tokenized-real-estate-server",
+  "version": "1.0.0",
+  "description": "backend for Bridges",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon src/index"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jake-sanjuan/tokenized-realestate.git"
+  },
+  "author": "saunic",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jake-sanjuan/tokenized-realestate/issues"
+  },
+  "homepage": "https://github.com/jake-sanjuan/tokenized-realestate#readme",
+  "dependencies": {
+    "apollo-server": "^2.22.2",
+    "graphql": "^15.5.0",
+    "nodemon": "^2.0.7"
+  },
+  "private": true
+}

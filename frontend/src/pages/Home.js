@@ -75,6 +75,7 @@ const Hero = styled.section`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  min-height: 80vh;
   h3 {
     font-size: 3rem;
   }

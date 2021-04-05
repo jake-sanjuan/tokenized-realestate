@@ -10,7 +10,7 @@ const ListingCard = ({ property }) => {
     country,
     beds,
     baths,
-    lot,
+    exteriorSize,
     bids,
     url,
   } = property;
@@ -33,7 +33,7 @@ const ListingCard = ({ property }) => {
             <p>{baths} Baths</p>
           </Rows>
           <Rows>
-            <p>{lot} Lot Size</p>
+            <p>{exteriorSize} SQ FT</p>
             <p className="bold">{bids} Bids</p>
           </Rows>
         </Info>
@@ -79,13 +79,13 @@ const TopBar = styled.section`
   justify-content: space-between;
   align-items: center;
   padding: 16px 24px;
-  border: 4px solid ${(props) => props.theme.green};
-  background-color: ${(props) => props.theme.green};
+  border: thin solid ${(props) => props.theme.green};
+  border-bottom: none;
   p {
-    font-weight: 500;
-    color: ${(props) => props.theme.white};
+    font-weight: 600;
+    color: ${(props) => props.theme.green};
     text-transform: uppercase;
-    font-size: clamp(0.5rem, 1rem, 1.2rem);
+    font-size: clamp(0.5rem, 0.8rem, 1rem);
   }
 `;
 
@@ -106,7 +106,7 @@ const Details = styled.main`
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  border: 4px solid ${(props) => props.theme.green};
+  border: thin solid ${(props) => props.theme.green};
   background-color: ${(props) => props.theme.white};
   @media (max-width: 375px) {
     border: thin solid ${(props) => props.theme.green};
@@ -139,7 +139,7 @@ const Rows = styled.div`
 
   p {
     text-transform: uppercase;
-    font-size: clamp(0.8rem, 1rem, 1.2rem);
+    font-size: clamp(0.5rem, 0.8rem, 1rem);
     margin-bottom: 0.5rem;
     .bold {
       font-weight: 600;
