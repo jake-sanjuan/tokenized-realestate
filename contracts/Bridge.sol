@@ -1,10 +1,10 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.6.0;
 
+import "./BridgeLinkQueries.sol";
 import "hardhat/console.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@chainlink/contracts/src/v0.6/ChainlinkClient.sol";
-import "@chainlink/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
+
 
 // Need to figure out IPFS storage, needs to be private, Nic sent good links
   // This will be through front end
@@ -21,17 +21,16 @@ import "@chainlink/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol";
 /*
   Agent stuff
     - Need to upload license, proof of id to IPFS at very least
-    - Could this be a seperate NFT? Might have to significantly alter contract,
-      tokenized real estate licensing isn't a bad idea though
     - Need title, certificate of title, deed uploaded to IPFS
     - Also could have a section for 'arbitrary documents'
 */
 
 // Is it unsafe to assign tokenId before minting token?
 
-contract Tokenizer is ChainlinkClient, ERC721 {
+/*TODO: Figure out if inheritance or having contract as variable makes more sense */
 
-  AggregatorV3Interface internal priceFeed;
+
+contract Bridge is ERC721Upgradeable, BridgeLinkQueries {
 
   mapping (address => bool) public licensed;
   mapping (address => bool) public owner; // Can possible use _owners from ERC721, need to test if mapping to uint will return true
@@ -41,7 +40,6 @@ contract Tokenizer is ChainlinkClient, ERC721 {
   mapping (address => uint) public numAgentApprovals;
   mapping (address => Property) public awaitingApproval;
   mapping (address => mapping (uint => Property)) ownerToIdToPropertyApproved;
-
 
   struct Property {
     bytes32 propertyOwner; // Hash
@@ -55,12 +53,6 @@ contract Tokenizer is ChainlinkClient, ERC721 {
 
   uint public tokenId;
 
-  address public oracle;
-  bytes32 public jobId;
-  uint256 public fee;
-
-  /*TODO: Figure out params for events, decide if extra events are needed where
-  events already emitted*/
   event PropertyRegistered(address indexed registeringAddress, uint indexed originalPrice);
   event AgentApprovedProperty(address indexed agent, address indexed propertyOwner, uint indexed tokenId);
   event SaleApproved(address indexed owner, uint indexed tokenId);
@@ -71,13 +63,10 @@ contract Tokenizer is ChainlinkClient, ERC721 {
   event OwnerApproved(address indexed newOwnerApproved);
   event AgentApproved(address indexed newAgentApproved);
 
-  constructor() public ERC721("Property Token", "PT") {
+  function initialize() public override initializer {
+    super.ERC721("Bridge", "BRDG"); /*TODO: Figure this out*/
+    super.initialize();
     tokenId = 0;
-    setPublicChainlinkToken();
-    oracle = 0x605C9B6f969A27982Fe1Be16e3a24F6720A14beD;// Find oracle
-    jobId = keccak256("");// Figure out where to get jobId
-    fee = 1;// Will depend on oracle used
-    priceFeed = AggregatorV3Interface(0x605C9B6f969A27982Fe1Be16e3a24F6720A14beD/*TODO: Get address for ETH USD*/);
   }
 
   modifier onlyLicensed() {
@@ -110,7 +99,6 @@ contract Tokenizer is ChainlinkClient, ERC721 {
     );
     _;
   }
-
 
   function registerProperty (
     string calldata _propertyOwner,
@@ -258,29 +246,34 @@ contract Tokenizer is ChainlinkClient, ERC721 {
   // Oracle call to validate and approve the property owner.  Must also be approved by agent, not one
   // That registered property
   function approvePropertyOwner(
+    string calldata ownerName,
+    string calldata url,
+    string calldata path,
     address _potentialOwner
   )
     external
     approvedByAgent(_potentialOwner)
   {
-    requestOwnerData();
+    requestOwnerData(ownerName, url, path);
     if(true/*Oracle call works*/) {
       owner[msg.sender] = true;
       emit OwnerApproved(_potentialOwner);
     }
   }
 
-
   // Oracle call will validate and approve property owner.  Must also be approved by other agent
   function approveLicense(
+    string calldata agentName,
+    string calldata url,
+    string calldata path,
     address _potentialAgent
   )
     external
     approvedByAgent(_potentialAgent)
   {
 
-    requestAgentData();
-    if (true/*Oracle call works*/) {
+    requestAgentData(agentName, url, path);
+    if (true) {
       licensed[msg.sender] = true;
       emit AgentApproved(_potentialAgent);
     }
@@ -295,53 +288,11 @@ contract Tokenizer is ChainlinkClient, ERC721 {
     numAgentApprovals[toBeApproved]++;
   }
 
-  //Emits ChainlinkFulfilled event
-  function fulfill(
-    bytes32 _requestId,
-    bool response
-    /*TODO: Add type here*/
-  )
-    external
-    recordChainlinkFulfillment(_requestId)
-  {
-    /*TODO: Return info, bool?*/
-  }
-
   function homeValueEthToUsd(uint _tokenId, address propertyOwner) external view returns (int) {
     Property memory property = ownerToIdToPropertyApproved[propertyOwner][_tokenId];
 
-    (
-        uint80 roundId,
-        int price,
-        uint startedAt,
-        uint timestamp,
-        uint80 answeredInRound
-    ) = priceFeed.latestRoundData();
+    (, int price, , , ) = priceFeed.latestRoundData();
     return price * int(property.currentPrice);
-  }
-
-  // Might not be able to be internal
-  // Emits "ChainlinkRequested" event
-  function requestOwnerData() internal returns (bytes32 requestId) {
-
-    Chainlink.Request memory request = buildChainlinkRequest(jobId, address(this), this.fulfill.selector);
-
-    request.add("get", ""/*TODO: Add Path*/);
-    request.add("path", ""/*TODO: Destructure JSON*/);
-
-    return sendChainlinkRequestTo(oracle, request, fee);
-  }
-
-  // Might not be able to be internal
-  // Emits "ChainlinkRequested" event
-  function requestAgentData() internal returns (bytes32 requestId) {
-
-    Chainlink.Request memory request = buildChainlinkRequest(jobId, address(this), this.fulfill.selector);
-
-    request.add("get", ""/*TODO: Add Path*/);
-    request.add("path", ""/*TODO: Destructure JSON*/);
-
-    return sendChainlinkRequestTo(oracle, request, fee);
   }
 
   // Emits ERC721 "Transfer" event
