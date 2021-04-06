@@ -63,8 +63,8 @@ contract Bridge is ERC721Upgradeable, BridgeLinkQueries {
   event OwnerApproved(address indexed newOwnerApproved);
   event AgentApproved(address indexed newAgentApproved);
 
-  function initialize() public override initializer {
-    super.ERC721("Bridge", "BRDG"); /*TODO: Figure this out*/
+  function initialize() public virtual override initializer {
+    super.__ERC721_init("Bridge", "BRDG");
     super.initialize();
     tokenId = 0;
   }
@@ -138,9 +138,9 @@ contract Bridge is ERC721Upgradeable, BridgeLinkQueries {
 
   //Emits "Transfer" event via "mint()" function
   function mintProperty(
-    uint _tokenId,
     string calldata _propertyOwner,
     string calldata _propertyAddress,
+    uint _tokenId,
     uint salt
   )
     external
@@ -175,7 +175,7 @@ contract Bridge is ERC721Upgradeable, BridgeLinkQueries {
     emit PaymentRecieved(msg.sender, msg.value, _tokenId);
   }
 
-
+  // Should this only be up to owner?
   // emits Transfer event ERC721
   function sell(
     address _from,
@@ -286,13 +286,6 @@ contract Bridge is ERC721Upgradeable, BridgeLinkQueries {
     );
 
     numAgentApprovals[toBeApproved]++;
-  }
-
-  function homeValueEthToUsd(uint _tokenId, address propertyOwner) external view returns (int) {
-    Property memory property = ownerToIdToPropertyApproved[propertyOwner][_tokenId];
-
-    (, int price, , , ) = priceFeed.latestRoundData();
-    return price * int(property.currentPrice);
   }
 
   // Emits ERC721 "Transfer" event

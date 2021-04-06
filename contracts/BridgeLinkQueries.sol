@@ -21,6 +21,12 @@ contract BridgeLinkQueries is ChainlinkClient, Initializable {
     priceFeed = AggregatorV3Interface(0x605C9B6f969A27982Fe1Be16e3a24F6720A14beD/*TODO: Get address for ETH USD*/);
   }
 
+  function homeValueEthToUsd(uint homeValueInEther) external view returns (int) {
+
+    (, int price, , , ) = priceFeed.latestRoundData();
+    return price * int(homeValueInEther);
+  }
+
   // Might not be able to be internal
   // Emits "ChainlinkRequested" event
   function requestOwnerData(
