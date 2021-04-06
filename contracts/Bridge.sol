@@ -27,9 +27,6 @@ import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 
 // Is it unsafe to assign tokenId before minting token?
 
-/*TODO: Figure out if inheritance or having contract as variable makes more sense */
-
-
 contract Bridge is ERC721Upgradeable, BridgeLinkQueries {
 
   mapping (address => bool) public licensed;
@@ -245,38 +242,64 @@ contract Bridge is ERC721Upgradeable, BridgeLinkQueries {
 
   // Oracle call to validate and approve the property owner.  Must also be approved by agent, not one
   // That registered property
-  function approvePropertyOwner(
-    string calldata ownerName,
-    string calldata url,
-    string calldata path,
+  function approveOwner(
+    bytes32 _ownerName,
+    bytes32 _addr,
+    string calldata _url,
+    string calldata _namePath,
+    string calldata _addrPath,
     address _potentialOwner
   )
     external
     approvedByAgent(_potentialOwner)
   {
-    requestOwnerData(ownerName, url, path);
-    if(true/*Oracle call works*/) {
-      owner[msg.sender] = true;
-      emit OwnerApproved(_potentialOwner);
-    }
+
+    DataToChainlinkQuery memory linkData;
+
+    linkData.url = _url;
+    linkData.namePath = _namePath;
+    linkData.addrPath = _addrPath;
+
+    uint chainLinkReturnNum = validateUser(linkData);
+
+    ChainlinkReturn memory linkReturn = countToChainlinkReturn[chainLinkReturnNum];
+
+    require(linkReturn.name == _ownerName && linkReturn.addr == _addr,
+      "Does not match Oracle validation");
+
+    owner[_potentialOwner] = true;
+    emit OwnerApproved(_potentialOwner);
+
   }
 
   // Oracle call will validate and approve property owner.  Must also be approved by other agent
   function approveLicense(
-    string calldata agentName,
-    string calldata url,
-    string calldata path,
+    bytes32 _ownerName,
+    bytes32 _addr,
+    string calldata _url,
+    string calldata _namePath,
+    string calldata _addrPath,
     address _potentialAgent
   )
     external
     approvedByAgent(_potentialAgent)
   {
 
-    requestAgentData(agentName, url, path);
-    if (true) {
-      licensed[msg.sender] = true;
-      emit AgentApproved(_potentialAgent);
-    }
+    DataToChainlinkQuery memory linkData;
+
+    linkData.url = _url;
+    linkData.namePath = _namePath;
+    linkData.addrPath = _addrPath;
+
+    uint chainLinkReturnNum = validateUser(linkData);
+
+    ChainlinkReturn memory linkReturn = countToChainlinkReturn[chainLinkReturnNum];
+
+    require(linkReturn.name == _ownerName && linkReturn.addr == _addr,
+      "Does not match Oracle validation");
+
+    owner[_potentialAgent] = true;
+    emit OwnerApproved(_potentialAgent);
   }
 
   function agentApproval(address toBeApproved) external onlyLicensed {
