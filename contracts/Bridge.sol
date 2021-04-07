@@ -1,9 +1,12 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.6.0;
+pragma experimental ABIEncoderV2;
 
+import "./BridgeLibrary.sol";
 import "./BridgeLinkQueries.sol";
 import "hardhat/console.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol";
 
 
 // Need to figure out IPFS storage, needs to be private, Nic sent good links
@@ -27,7 +30,7 @@ import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 
 // Is it unsafe to assign tokenId before minting token?
 
-contract Bridge is ERC721Upgradeable, BridgeLinkQueries {
+contract Bridge is Initializable, ERC721Upgradeable {
 
   mapping (address => bool) public licensed;
   mapping (address => bool) public owner;
@@ -50,6 +53,8 @@ contract Bridge is ERC721Upgradeable, BridgeLinkQueries {
 
   uint public tokenId;
 
+  BridgeLinkQueries public linkQueries;
+
   event PropertyRegistered(
     address indexed registeringAddress,
     uint indexed originalPrice
@@ -71,9 +76,9 @@ contract Bridge is ERC721Upgradeable, BridgeLinkQueries {
   event OwnerApproved(address indexed newOwnerApproved);
   event AgentApproved(address indexed newAgentApproved);
 
-  function initialize() public virtual override initializer {
+  function initialize() public virtual initializer {
+    linkQueries = new BridgeLinkQueries();
     super.__ERC721_init("Bridge", "BRDG");
-    super.initialize();
     tokenId = 0;
   }
 
@@ -276,18 +281,20 @@ contract Bridge is ERC721Upgradeable, BridgeLinkQueries {
     approvedByAgent(_potentialOwner)
   {
 
-    DataToChainlinkQuery memory linkData;
-
+    BridgeLibrary.DataToChainlinkQuery memory linkData;
     linkData.url = _url;
     linkData.namePath = _namePath;
     linkData.addrPath = _addrPath;
 
-    uint chainLinkReturnNum = validateUser(linkData);
+    uint chainlinkReturnNum = linkQueries.validateUser(linkData);
 
-    ChainlinkReturn memory linkReturn = countToChainlinkReturn[chainLinkReturnNum];
+    BridgeLibrary.ChainlinkReturn memory linkReturn =
+      linkQueries.retrieveData(chainlinkReturnNum);
 
-    require(linkReturn.name == _ownerName && linkReturn.addr == _addr,
-      "Does not match Oracle validation");
+    require(
+      linkReturn.name == _ownerName && linkReturn.addr == _addr,
+      "Does not match Oracle validation"
+    );
 
     approved[_potentialOwner] = true;
     emit OwnerApproved(_potentialOwner);
@@ -306,21 +313,23 @@ contract Bridge is ERC721Upgradeable, BridgeLinkQueries {
     approvedByAgent(_potentialAgent)
   {
 
-    DataToChainlinkQuery memory linkData;
-
+    BridgeLibrary.DataToChainlinkQuery memory linkData;
     linkData.url = _url;
     linkData.namePath = _namePath;
     linkData.addrPath = _addrPath;
 
-    uint chainLinkReturnNum = validateUser(linkData);
+    uint chainlinkReturnNum = linkQueries.validateUser(linkData);
 
-    ChainlinkReturn memory linkReturn = countToChainlinkReturn[chainLinkReturnNum];
+    BridgeLibrary.ChainlinkReturn memory linkReturn =
+      linkQueries.retrieveData(chainlinkReturnNum);
 
-    require(linkReturn.name == _agentName && linkReturn.addr == _addr,
-      "Does not match Oracle validation");
+    require(
+      linkReturn.name == _agentName && linkReturn.addr == _addr,
+      "Does not match Oracle validation"
+    );
 
     owner[_potentialAgent] = true;
-    emit OwnerApproved(_potentialAgent);
+    emit AgentApproved(_potentialAgent);
   }
 
   function agentApproval(address toBeApproved) external onlyLicensed {
@@ -328,8 +337,11 @@ contract Bridge is ERC721Upgradeable, BridgeLinkQueries {
       msg.sender != registeringAgent[toBeApproved],
       "Agent that registered property cannot also approve owner"
     );
-
     numAgentApprovals[toBeApproved]++;
+  }
+
+  function checkHomePriceInUsd(uint priceInEther) external view {
+    linkQueries.homeValueEthToUsd(priceInEther);
   }
 
   function mint(address to, uint _tokenId) private {

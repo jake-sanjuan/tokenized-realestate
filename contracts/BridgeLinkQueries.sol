@@ -1,27 +1,17 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.6.0;
+pragma experimental ABIEncoderV2;
 
+import "./BridgeLibrary.sol";
 import "hardhat/console.sol";
 import "@chainlink/contracts/src/v0.6/ChainlinkClient.sol";
 import "@chainlink/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol";
 
-contract BridgeLinkQueries is ChainlinkClient, Initializable {
+contract BridgeLinkQueries is ChainlinkClient {
 
   AggregatorV3Interface internal priceFeed;
 
-  mapping(uint => ChainlinkReturn) public countToChainlinkReturn;
-
-  struct DataToChainlinkQuery {
-    string url;
-    string namePath;
-    string addrPath;
-  }
-
-  struct ChainlinkReturn {
-    bytes32 name;
-    bytes32 addr;
-  }
+  mapping (uint => BridgeLibrary.ChainlinkReturn) public countToChainlinkReturn;
 
   address public oracle;
   bytes32 public jobId;
@@ -29,7 +19,7 @@ contract BridgeLinkQueries is ChainlinkClient, Initializable {
 
   uint validatorCount;
 
-  function initialize() public virtual initializer {
+  constructor() public {
     setPublicChainlinkToken();
     oracle = 0x605C9B6f969A27982Fe1Be16e3a24F6720A14beD;// Find oracle
     jobId = keccak256("");// Figure out where to get jobId
@@ -38,7 +28,7 @@ contract BridgeLinkQueries is ChainlinkClient, Initializable {
     validatorCount = 0;
   }
 
-  function homeValueEthToUsd(uint homeValueInEther) public view returns (int) {
+  function homeValueEthToUsd(uint homeValueInEther) external view returns (int) {
     (, int price, , , ) = priceFeed.latestRoundData();
     return price * int(homeValueInEther);
   }
@@ -50,7 +40,8 @@ contract BridgeLinkQueries is ChainlinkClient, Initializable {
     external
     recordChainlinkFulfillment(_requestId)
   {
-    ChainlinkReturn storage linkReturn = countToChainlinkReturn[validatorCount];
+    BridgeLibrary.ChainlinkReturn storage linkReturn =
+      countToChainlinkReturn[validatorCount];
     linkReturn.name = _chainlinkResponse;
   }
 
@@ -61,14 +52,27 @@ contract BridgeLinkQueries is ChainlinkClient, Initializable {
     external
     recordChainlinkFulfillment(_requestId)
   {
-    ChainlinkReturn storage linkReturn = countToChainlinkReturn[validatorCount];
+    BridgeLibrary.ChainlinkReturn storage linkReturn =
+      countToChainlinkReturn[validatorCount];
     linkReturn.addr = _chainlinkResponse;
   }
 
-  function validateUser(DataToChainlinkQuery memory linkData) internal returns (uint) {
-    ChainlinkReturn storage linkReturn = countToChainlinkReturn[validatorCount];
-    linkReturn.name = "";
-    linkReturn.addr = "";
+  function retrieveData(
+    uint _validatorCount
+  )
+    external
+    view
+    returns (BridgeLibrary.ChainlinkReturn memory)
+  {
+    BridgeLibrary.ChainlinkReturn memory linkReturn = countToChainlinkReturn[_validatorCount];
+    return linkReturn;
+  }
+
+  function validateUser(
+    BridgeLibrary.DataToChainlinkQuery calldata linkData
+  )
+    external
+    returns (uint) {
 
     checkName(linkData.url, linkData.namePath);
     checkAddress(linkData.url, linkData.addrPath);
@@ -87,7 +91,11 @@ contract BridgeLinkQueries is ChainlinkClient, Initializable {
     returns (bytes32 requestId)
   {
 
-    Chainlink.Request memory request = buildChainlinkRequest(jobId, address(this), this.fulfillCheckName.selector);
+    Chainlink.Request memory request = buildChainlinkRequest(
+      jobId,
+      address(this), // Needs to be proxy address,
+      this.fulfillCheckName.selector
+    );
 
     request.add("get", url);
     request.add("path", path);
@@ -104,7 +112,11 @@ contract BridgeLinkQueries is ChainlinkClient, Initializable {
     private
     returns (bytes32 requestId) {
 
-    Chainlink.Request memory request = buildChainlinkRequest(jobId, address(this), this.fulfillCheckAddress.selector);
+    Chainlink.Request memory request = buildChainlinkRequest(
+      jobId,
+      address(this), // Needs to be proxy address,
+      this.fulfillCheckAddress.selector
+    );
 
     request.add("get", url);
     request.add("path", path);
