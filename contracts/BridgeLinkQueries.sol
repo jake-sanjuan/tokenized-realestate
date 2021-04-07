@@ -52,8 +52,6 @@ contract BridgeLinkQueries is ChainlinkClient, Initializable {
   {
     ChainlinkReturn storage linkReturn = countToChainlinkReturn[validatorCount];
     linkReturn.name = _chainlinkResponse;
-
-
   }
 
   function fulfillCheckAddress(

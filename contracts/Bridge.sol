@@ -30,7 +30,7 @@ import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 contract Bridge is ERC721Upgradeable, BridgeLinkQueries {
 
   mapping (address => bool) public licensed;
-  mapping (address => bool) public owner; // Can possible use _owners from ERC721, need to test if mapping to uint will return true
+  mapping (address => bool) public owner;
   mapping (address => bool) public approved; // Allows users that have sold property to remain validated
   mapping (address => bool) public newOwner; // Used for new owners that have not changed name yet
   mapping (address => address) public registeringAgent;
@@ -39,8 +39,8 @@ contract Bridge is ERC721Upgradeable, BridgeLinkQueries {
   mapping (address => mapping (uint => Property)) ownerToIdToPropertyApproved;
 
   struct Property {
-    bytes32 propertyOwner; // Hash
-    bytes32 propertyAddress; // Hash
+    bytes32 propertyOwner;
+    bytes32 propertyAddress;
     uint currentPrice;
     uint changePriceCount;
     bool saleApproved;
@@ -50,10 +50,21 @@ contract Bridge is ERC721Upgradeable, BridgeLinkQueries {
 
   uint public tokenId;
 
-  event PropertyRegistered(address indexed registeringAddress, uint indexed originalPrice);
-  event AgentApprovedProperty(address indexed agent, address indexed propertyOwner, uint indexed tokenId);
+  event PropertyRegistered(
+    address indexed registeringAddress,
+    uint indexed originalPrice
+  );
+  event AgentApprovedProperty(
+    address indexed agent,
+    address indexed propertyOwner,
+    uint indexed tokenId
+  );
   event SaleApproved(address indexed owner, uint indexed tokenId);
-  event PaymentRecieved(address indexed buyer, uint indexed paymentAmount, uint indexed tokenId);
+  event PaymentRecieved(
+    address indexed buyer,
+    uint indexed paymentAmount,
+    uint indexed tokenId
+  );
   event PropertyPriceChanged(uint indexed tokenId, uint indexed newPrice);
   event OwnerChanged(address indexed newOwner, uint indexed tokenId);
   event LicenseRevoked(address indexed revokedLicenseAddress);
@@ -72,7 +83,10 @@ contract Bridge is ERC721Upgradeable, BridgeLinkQueries {
   }
 
   modifier onlyPropertyOwner() {
-    require(owner[msg.sender] == true, "Must be property owner to call function.");
+    require(
+      owner[msg.sender] == true,
+      "Must be validated property owner to call function."
+    );
     _;
   }
 
@@ -101,13 +115,13 @@ contract Bridge is ERC721Upgradeable, BridgeLinkQueries {
     string calldata _propertyOwner,
     string calldata _propertyAddress,
     uint salt,  // Will be displayed as pin to user on frontend
-    uint _currentPrice
+    uint _currentPrice,
+    address _propertyOwnerAddr
   )
     external
     onlyPropertyOwner
   {
-    Property storage property = awaitingApproval[msg.sender];
-
+    Property storage property = awaitingApproval[_propertyOwnerAddr];
     property.propertyOwner = keccak256(abi.encode(_propertyOwner, salt));
     property.propertyAddress = keccak256(abi.encode(_propertyAddress, salt));
     property.currentPrice = _currentPrice;
@@ -117,15 +131,17 @@ contract Bridge is ERC721Upgradeable, BridgeLinkQueries {
     emit PropertyRegistered(msg.sender, _currentPrice);
   }
 
-  function approveProperty(address _propertyOwner) external onlyLicensed returns (uint) {
-
+  function approveProperty(
+    address _propertyOwner
+  )
+    external
+    onlyLicensed
+    returns (uint)
+  {
     Property storage property = awaitingApproval[_propertyOwner];
-
     registeringAgent[_propertyOwner] = msg.sender;
     ownerToIdToPropertyApproved[_propertyOwner][tokenId] = property;
-
     tokenId++;
-
     delete(awaitingApproval[_propertyOwner]);
 
     emit AgentApprovedProperty(msg.sender, _propertyOwner, tokenId - 1);
@@ -145,7 +161,8 @@ contract Bridge is ERC721Upgradeable, BridgeLinkQueries {
   {
     Property storage property = ownerToIdToPropertyApproved[msg.sender][_tokenId];
 
-    require(property.propertyOwner == keccak256(abi.encode(_propertyOwner, salt)) &&
+    require(
+      property.propertyOwner == keccak256(abi.encode(_propertyOwner, salt)) &&
       property.propertyAddress == keccak256(abi.encode(_propertyAddress, salt)),
       "Function caller does not own property with that ID"
     );
@@ -160,20 +177,21 @@ contract Bridge is ERC721Upgradeable, BridgeLinkQueries {
     emit SaleApproved(msg.sender, _tokenId);
   }
 
-  // Need functionality to accept payment and route to agent so they can actually sell
-  // Escrow somehow?
-  function payment(uint _tokenId, address propertyOwner) external payable onlyNewOwner {
+  function payment(
+    uint _tokenId,
+    address propertyOwner
+  )
+    external
+    payable
+    onlyNewOwner
+  {
     Property storage property = ownerToIdToPropertyApproved[propertyOwner][_tokenId];
-
     require(msg.value == property.currentPrice, "Must send exact amount");
-
     property.paid = true;
 
     emit PaymentRecieved(msg.sender, msg.value, _tokenId);
   }
 
-  // Should this only be up to owner?
-  // emits Transfer event ERC721
   function sell(
     address _from,
     address _to,
@@ -184,23 +202,23 @@ contract Bridge is ERC721Upgradeable, BridgeLinkQueries {
   {
     Property storage property = ownerToIdToPropertyApproved[_from][_tokenId];
     require(property.saleApproved, "Owner must have approved sale");
-    require(property.paid, "Payment to contract must be received before function call");
+    require(
+      property.paid,
+      "Payment to contract must be received before function call"
+    );
+    require(approved[_to], "Must be validated as owner");
 
     safeTransferFrom(_from, _to, _tokenId);
     payable(_from).transfer(property.currentPrice);
 
     property.saleApproved = false;
     property.paid = false;
-
     ownerToIdToPropertyApproved[_to][_tokenId] = property;
-
     delete(ownerToIdToPropertyApproved[_from][_tokenId]);
     newOwner[_to] = true;
     owner[_from] = false;
   }
 
-  // Might need to look at functionality here, would make sense to split to two functions
-  // Second would be internal and automatically execute when property.priceChangeCount == 2
   function changeCurrentPrice(
     address propertyOwner,
     uint _tokenId,
@@ -221,16 +239,22 @@ contract Bridge is ERC721Upgradeable, BridgeLinkQueries {
     }
   }
 
-  // Definitely need to map newOwner to property they are allowed to change owner for
-  function changeOwner(string calldata newOwnerName, uint salt, uint _tokenId) external onlyNewOwner {
-    Property storage property = ownerToIdToPropertyApproved[msg.sender][tokenId];
+  function changeOwner(
+    string calldata newOwnerName,
+    uint salt,
+    uint _tokenId
+  )
+    external
+    onlyNewOwner
+  {
+    require(newOwner[msg.sender], "Must be a new owner to call this function.");
+    Property storage property = ownerToIdToPropertyApproved[msg.sender][_tokenId];
     property.propertyOwner = keccak256(abi.encode(newOwnerName, salt));
     newOwner[msg.sender] = false;
     owner[msg.sender] = true;
     emit OwnerChanged(msg.sender, _tokenId);
   }
 
-  // Emits Transfer event
   function burn(uint _tokenId) external onlyPropertyOwner {
     _burn(_tokenId);
   }
@@ -240,8 +264,6 @@ contract Bridge is ERC721Upgradeable, BridgeLinkQueries {
     emit LicenseRevoked(msg.sender);
   }
 
-  // Oracle call to validate and approve the property owner.  Must also be approved by agent, not one
-  // That registered property
   function approveOwner(
     bytes32 _ownerName,
     bytes32 _addr,
@@ -267,14 +289,13 @@ contract Bridge is ERC721Upgradeable, BridgeLinkQueries {
     require(linkReturn.name == _ownerName && linkReturn.addr == _addr,
       "Does not match Oracle validation");
 
-    owner[_potentialOwner] = true;
+    approved[_potentialOwner] = true;
     emit OwnerApproved(_potentialOwner);
 
   }
 
-  // Oracle call will validate and approve property owner.  Must also be approved by other agent
   function approveLicense(
-    bytes32 _ownerName,
+    bytes32 _agentName,
     bytes32 _addr,
     string calldata _url,
     string calldata _namePath,
@@ -295,7 +316,7 @@ contract Bridge is ERC721Upgradeable, BridgeLinkQueries {
 
     ChainlinkReturn memory linkReturn = countToChainlinkReturn[chainLinkReturnNum];
 
-    require(linkReturn.name == _ownerName && linkReturn.addr == _addr,
+    require(linkReturn.name == _agentName && linkReturn.addr == _addr,
       "Does not match Oracle validation");
 
     owner[_potentialAgent] = true;
@@ -311,8 +332,7 @@ contract Bridge is ERC721Upgradeable, BridgeLinkQueries {
     numAgentApprovals[toBeApproved]++;
   }
 
-  // Emits ERC721 "Transfer" event
-  function mint(address to, uint _tokenId) internal {
+  function mint(address to, uint _tokenId) private {
     _safeMint(to, _tokenId);
   }
 }
