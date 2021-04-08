@@ -34,7 +34,7 @@ var getSigner = ()=>{
         try {
             if (typeof  window.ethereum !== undefined) {
                 window.ethereum.enable()
-                    .then(()=>{
+                    .then((accounts)=>{
                         const provider = new ethers.providers.Web3Provider(window.ethereum)
                         provider.on("network", (_newNetwork, oldNetwork) => {
                             // When a Provider makes its initial connection, it emits a "network"
@@ -57,45 +57,4 @@ var getSigner = ()=>{
     })
 }
 
-// window.ethereum.enable()
-// var provider = new ethers.providers.Web3Provider(window.ethereum);
-
-// provider.on("network", (_newNetwork, oldNetwork) => {
-//   // When a Provider makes its initial connection, it emits a "network"
-//   // event with a null oldNetwork along with the newNetwork. So, if the
-//   // oldNetwork exists, it represents a changing network
-//   if (oldNetwork) {
-//       window.location.reload();
-//   }
-// });
-
-// var signer = provider.getSigner(0);
-// var contractAddress = "0xD02C513472A7BA8ca4532642f390DdBA4249516E";
-
-//var abi = fs.readFile("Tokenizer.json");
-
-// function getContract(address, abiUrl, signer){
-//     return new Promise((resolve, reject)=>{
-//         request.get(abiUrl, function (error, response, body) {
-//             if (!error && response.statusCode == 200) {
-//                 let abi = body
-//                 let contract = "hello" //new ethers.Contract(address, abi, signer)
-//                 resolve(contract)
-//             }
-//             else{
-//                 reject(new Error("Could not get abi"))
-//             }
-//         });
-        
-//     });
-    
-// }
-//var contract = new ethers.Contract(contractAddress, abi, signer)
 export { getContract, getSigner };
-// getContract(contractAddress, abiUrl, signer)
-//     .then((contract)=>{
-//         contract = contract
-//     })
-//     .catch((e)=>{
-//         console.log(e)
-//     })
