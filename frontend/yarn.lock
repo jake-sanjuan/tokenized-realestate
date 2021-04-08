@@ -8103,6 +8103,11 @@
     "lower-case" "^2.0.2"
     "tslib" "^2.0.3"
 
+"node-fecth@^0.0.1-security":
+  "integrity" "sha512-7YRxL4a1aV2Up7f7pxaQU70wNXpA2X5IRyiMRB0OreG2jhLH3C4olv6t5sEExEX4kOeq4181wwFegDmNAlfQPg=="
+  "resolved" "https://registry.npmjs.org/node-fecth/-/node-fecth-0.0.1-security.tgz"
+  "version" "0.0.1-security"
+
 "node-forge@^0.10.0":
   "integrity" "sha512-PPmu8eEeG9saEUvI97fm4OYxXVB6bFvyNTyiUOBichBpFG8A1Ljw3bY62+5oOjDEMHRnd0Y7HQ+x7uzxOzC6JA=="
   "resolved" "https://registry.yarnpkg.com/node-forge/-/node-forge-0.10.0.tgz"
