@@ -1,4 +1,5 @@
 import React from "react";
+import styled from "styled-components";
 
 const QueryResult = ({ loading, error, data, children }) => {
   if (error) {
@@ -6,13 +7,10 @@ const QueryResult = ({ loading, error, data, children }) => {
   }
   if (loading) {
     return (
-      <iframe
-        src="https://my.spline.design/untitled-19dba538b6290cae2bc6ecb011c01e05/"
-        frameBorder="0"
-        width="100%"
-        height="100%"
+      <Loading
+        src="https://my.spline.design/logo3d-645e87637a388689f1346d71300a50b3/"
         title="Bridges-Loading-Logo"
-      ></iframe>
+      ></Loading>
     );
   }
 
@@ -26,3 +24,13 @@ const QueryResult = ({ loading, error, data, children }) => {
 };
 
 export default QueryResult;
+
+const Loading = styled.iframe`
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+`;

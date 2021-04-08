@@ -9,6 +9,7 @@ import Agents from "./pages/Agents";
 import Account from "./pages/Account";
 import Light from "./styles/theme";
 import Footer from "./components/Footer";
+import Property from "./pages/Property";
 
 const App = () => {
   return (
@@ -17,7 +18,8 @@ const App = () => {
         <NavBar />
         <Switch>
           <Route exact path="/" component={Home} />
-          <Route path="/buy" component={Buy} />
+          <Route exact path="/buy" component={Buy} />
+          <Route path="/buy/property/:id" component={Property} />
           <Route path="/sell" component={Sell} />
           <Route path="/agents" component={Agents} />
           <Route path="/account" component={Account} />

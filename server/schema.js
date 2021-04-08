@@ -4,6 +4,7 @@ const typeDefs = gql`
   type Query {
     "Query for Buy Page, where all properties are listed"
     properties: [Property!]!
+    property(id: ID!): Property!
   }
 
   "A User can be a Buyer, Seller or Real Estate Agent"
@@ -11,10 +12,11 @@ const typeDefs = gql`
     id: ID!
     name: String!
     email: String!
-    userType: Int
-    propertiesSelling: [Property!]!
-    propertiesBidding: [Property!]!
-    propertiesBought: [Property!]!
+    isAgent: Boolean
+    propertiesSelling: [Property]
+    propertiesBidding: [Property]
+    propertiesBought: [Property]
+    propertiesBrokering: [Property]
     "URL for ID"
     proofOfId: String!
     "URL for Real Estate License, if they uploaded one"
@@ -26,12 +28,14 @@ const typeDefs = gql`
     address: String!
     area: String!
     country: String!
+    postalCode: String!
     price: Float!
     beds: Float!
     baths: Float!
     interiorSize: Int!
-    ExteriorSize: Int!
+    exteriorSize: Int!
     mainImage: String!
+    secondaryImage: String!
     yearBuilt: Int
     "For Sale or Sold"
     status: String!
@@ -43,6 +47,8 @@ const typeDefs = gql`
     agent: User!
     "Number of bids"
     bids: Int
+    parking: String
+    propertyTaxes: Int
   }
 `;
 

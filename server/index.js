@@ -4,19 +4,23 @@ const typeDefs = require("./schema");
 const mocks = {
   Query: () => ({
     properties: () => new MockList([6, 9]),
+    property: () => Property,
   }),
   Property: () => ({
     id: () => "property-01",
     address: () => "123 Fake Avenue",
     area: () => "Calgary, Alberta",
     country: () => "Canada",
+    postalCode: () => "X1X 1X1",
     price: () => 1234.56,
     beds: () => 5,
     baths: () => 6.5,
     interiorSize: () => 123456,
-    ExteriorSize: () => "78910",
+    exteriorSize: () => 78910,
     mainImage: () =>
-      "https://source.unsplash.com/featured/300x300?luxury,house",
+      "https://images.pexels.com/photos/1732414/pexels-photo-1732414.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    secondaryImage: () =>
+      "https://images.pexels.com/photos/6315797/pexels-photo-6315797.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
     yearBuilt: () => 2021,
     status: () => "For Sale",
     amenities: () => [
@@ -47,7 +51,18 @@ const mocks = {
     ],
     features: () => ["Mountain Views, Scenic View"],
     owner: () => "user-01",
-    agent: () => "user-02",
+    agent: () => "user-01",
+    propertyTaxes: () => 31667,
+    parking: () => "garage",
+    bids: () => 21,
+  }),
+  User: () => ({
+    id: () => "user-01",
+    name: () => "John Doe",
+    email: () => "email@gmail.com",
+    propertiesSelling: () => ["property-01"],
+    proofOfId: () =>
+      "https://images.pexels.com/photos/45113/pexels-photo-45113.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
   }),
 };
 

@@ -13,6 +13,7 @@ const ListingCard = ({ property }) => {
     baths,
     exteriorSize,
     bids,
+    mainImage,
   } = property;
   return (
     <Card>
@@ -21,9 +22,9 @@ const ListingCard = ({ property }) => {
         <p>2 Days Remaining</p>
       </TopBar>
       <Details>
-        <Image src="https://source.unsplash.com/featured/300x300?luxury,house" />
+        <Image src={mainImage} />
         <Info>
-          <h3>{address}</h3>
+          <h4>{address}</h4>
           <Rows>
             <p>{area}</p>
             <p>{country}</p>
@@ -37,7 +38,7 @@ const ListingCard = ({ property }) => {
             <p className="bold">{bids} Bids</p>
           </Rows>
         </Info>
-        <Button secondarySmall to={`/buy/property/${id}`}>
+        <Button secondarySmall to={`/buy/property/${id}`} property={property}>
           View Property
         </Button>
       </Details>
@@ -81,6 +82,7 @@ const TopBar = styled.section`
   padding: 16px 24px;
   border: thin solid ${(props) => props.theme.green};
   border-bottom: none;
+  background-color: ${(props) => props.theme.white};
   p {
     font-weight: 600;
     color: ${(props) => props.theme.green};
@@ -114,16 +116,16 @@ const Details = styled.main`
 `;
 
 const Info = styled.div`
-  width: 100%;
+  width: 85%;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
   margin-bottom: 1rem;
-  h3 {
+  h4 {
+    align-self: center;
     font-size: clamp(1rem, 1.5rem, 2rem);
     margin: 1rem 0;
-    font-weight: 600;
   }
 `;
 
