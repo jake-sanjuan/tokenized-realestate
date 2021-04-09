@@ -22,6 +22,29 @@ body::-webkit-scrollbar-track {
 body::-webkit-scrollbar-thumb {
     background-color: #2B2B2B;
 }
+
+button {
+  border: thin solid #FAFBFF;
+  margin: 1rem 0;
+    padding: 1rem 2rem;
+    background-color: #214536;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    color: #FAFBFF;
+    font-weight: 600;
+    font-family: termina, sans-serif;
+    letter-spacing: 0.05em;
+    border-radius: 0;
+    margin-right: 1rem;
+    cursor: pointer;
+    :hover{
+      outline: none;
+    border: thin solid #D7FF83;
+    background-color: #D5DCFF;
+    color: #214536;
+    border-radius: 0;
+    }
+}
  
   h1 {
     font-family: orpheuspro, serif;

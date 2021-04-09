@@ -25,7 +25,7 @@ const Button = styled(Link)`
   outline: none;
   cursor: pointer;
   text-decoration: none;
-
+  height: fit-content;
   margin-right: 8px;
 
   :hover {

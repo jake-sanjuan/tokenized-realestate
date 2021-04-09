@@ -3,6 +3,8 @@ import styled, { css } from "styled-components";
 const Container = styled.main`
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   margin: 0;
   padding: clamp(1rem, 3rem, 6rem);
   background-color: ${(props) => props.theme.white};
