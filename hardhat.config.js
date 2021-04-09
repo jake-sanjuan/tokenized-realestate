@@ -23,7 +23,7 @@ module.exports = {
     hardhat: {
 
     },
-    ropsten: {
+    kovan: {
       url: process.env.ALCHEMY_API,
       accounts: [process.env.PRIVATE_KEY]
     }

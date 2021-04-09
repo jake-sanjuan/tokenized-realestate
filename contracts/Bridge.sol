@@ -79,6 +79,7 @@ contract Bridge is Initializable, ERC721Upgradeable {
   function initialize() public virtual initializer {
     linkQueries = new BridgeLinkQueries();
     super.__ERC721_init("Bridge", "BRDG");
+    licensed[msg.sender] = true;
     tokenId = 0;
   }
 

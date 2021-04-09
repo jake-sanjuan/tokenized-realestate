@@ -20,11 +20,11 @@ contract BridgeLinkQueries is ChainlinkClient {
   uint validatorCount;
 
   constructor() public {
-    setPublicChainlinkToken();
-    oracle = 0x605C9B6f969A27982Fe1Be16e3a24F6720A14beD;// Find oracle
-    jobId = keccak256("");// Figure out where to get jobId
-    fee = 1;// Will depend on oracle used
-    priceFeed = AggregatorV3Interface(0x605C9B6f969A27982Fe1Be16e3a24F6720A14beD/*TODO: Get Kovan address for ETH USD*/);
+    setChainlinkToken(0xa36085F69e2889c224210F603D836748e7dC0088);
+    oracle = 0x1b666ad0d20bC4F35f218120d7ed1e2df60627cC;
+    jobId = "e7fbe2c2bde643788f4a76b7b09db8ff";
+    fee = 0.1 * 10 ** 18;
+    priceFeed = AggregatorV3Interface(0xAA1DC356dc4B18f30C347798FD5379F3D77ABC5b);
     validatorCount = 0;
   }
 
@@ -81,8 +81,6 @@ contract BridgeLinkQueries is ChainlinkClient {
     return validatorCount - 1;
   }
 
-  // Might not be able to be internal
-  // Emits "ChainlinkRequested" event
   function checkName(
     string memory url,
     string memory path
@@ -93,7 +91,7 @@ contract BridgeLinkQueries is ChainlinkClient {
 
     Chainlink.Request memory request = buildChainlinkRequest(
       jobId,
-      address(this), // Needs to be proxy address,
+      address(this),
       this.fulfillCheckName.selector
     );
 
@@ -103,8 +101,6 @@ contract BridgeLinkQueries is ChainlinkClient {
     return sendChainlinkRequestTo(oracle, request, fee);
   }
 
-  // Might not be able to be internal
-  // Emits "ChainlinkRequested" event
   function checkAddress(
     string memory url,
     string memory path
@@ -114,7 +110,7 @@ contract BridgeLinkQueries is ChainlinkClient {
 
     Chainlink.Request memory request = buildChainlinkRequest(
       jobId,
-      address(this), // Needs to be proxy address,
+      address(this),
       this.fulfillCheckAddress.selector
     );
 
