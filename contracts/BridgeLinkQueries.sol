@@ -64,7 +64,9 @@ contract BridgeLinkQueries is ChainlinkClient {
     view
     returns (BridgeLibrary.ChainlinkReturn memory)
   {
-    BridgeLibrary.ChainlinkReturn memory linkReturn = countToChainlinkReturn[_validatorCount];
+    BridgeLibrary.ChainlinkReturn memory linkReturn =
+      countToChainlinkReturn[_validatorCount];
+      
     return linkReturn;
   }
 

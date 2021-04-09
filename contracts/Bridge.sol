@@ -207,12 +207,18 @@ contract Bridge is Initializable, ERC721Upgradeable {
     onlyLicensed
   {
     Property storage property = ownerToIdToPropertyApproved[_from][_tokenId];
-    require(property.saleApproved, "Owner must have approved sale");
+    require(
+      property.saleApproved,
+      "Owner must have approved sale"
+    );
     require(
       property.paid,
       "Payment to contract must be received before function call"
     );
-    require(approved[_to], "Must be validated as owner");
+    require(
+      approved[_to],
+      "Must be validated as owner"
+    );
 
     safeTransferFrom(_from, _to, _tokenId);
     payable(_from).transfer(property.currentPrice);
@@ -247,15 +253,17 @@ contract Bridge is Initializable, ERC721Upgradeable {
 
   function changeOwner(
     string calldata newOwnerName,
+    string calldata propertyAddress,
     uint salt,
     uint _tokenId
   )
     external
     onlyNewOwner
   {
-    require(newOwner[msg.sender], "Must be a new owner to call this function.");
     Property storage property = ownerToIdToPropertyApproved[msg.sender][_tokenId];
+
     property.propertyOwner = keccak256(abi.encode(newOwnerName, salt));
+    property.propertyAddress = keccak256(abi.encode(propertyAddress, salt));
     newOwner[msg.sender] = false;
     owner[msg.sender] = true;
     emit OwnerChanged(msg.sender, _tokenId);

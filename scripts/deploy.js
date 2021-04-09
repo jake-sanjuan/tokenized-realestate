@@ -20,7 +20,7 @@ async function main() {
   const bridgeLinkQueries = await BridgeLinkQueries.deploy();
   await bridgeLinkQueries.deployed();
 
-  const BridgeProxy = await ethers.getContractFactory('BridgeLinkQueries');
+  const BridgeProxy = await ethers.getContractFactory('BridgeProxy');
   const bridgeProxy = await BridgeProxy.deploy(bridgeAddress);
   await bridgeProxy.deployed();
 
