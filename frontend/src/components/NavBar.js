@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import LogoLine from "../assets/logo-line.png";
@@ -8,6 +8,7 @@ import { utils } from "ethers";
 
 const NavBar = () => {
   const [hover, setHover] = useState(false);
+  const [address, setAddress] = useState();
 
   const ConnectWallet = () => {
     getSigner()
@@ -15,7 +16,7 @@ const NavBar = () => {
         signer
           .getAddress()
           .then((add) => {
-            console.log("Address: " + add);
+            setAddress(add);
           })
           .catch((e) => {
             console.log(e);
@@ -57,8 +58,11 @@ const NavBar = () => {
 
       <LinkGroup>
         <NavLink to="/buy">Buy</NavLink>
-        <NavLink to="/sell">Sell</NavLink>
-        <button onClick={() => ConnectWallet()}>Connect Wallet</button>
+        {address && <NavLink to="/tokenize">Tokenize</NavLink>}
+
+        {!address && (
+          <button onClick={() => ConnectWallet()}>Connect Wallet</button>
+        )}
       </LinkGroup>
     </Nav>
   );

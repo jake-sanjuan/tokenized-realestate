@@ -7,9 +7,10 @@ const mocks = {
     property: () => Property,
   }),
   Property: () => ({
-    id: () => "property-01",
+    id: () => "property-1",
     address: () => "123 Fake Avenue",
-    area: () => "Calgary, Alberta",
+    city: () => "Calgary",
+    state: () => "Alberta",
     country: () => "Canada",
     postalCode: () => "X1X 1X1",
     price: () => 1234.56,

@@ -7,7 +7,8 @@ const ListingCard = ({ property }) => {
     id,
     price,
     address,
-    area,
+    city,
+    state,
     country,
     beds,
     baths,
@@ -15,6 +16,7 @@ const ListingCard = ({ property }) => {
     bids,
     mainImage,
   } = property;
+  console.log(property);
   return (
     <Card>
       <TopBar>
@@ -26,7 +28,7 @@ const ListingCard = ({ property }) => {
         <Info>
           <h4>{address}</h4>
           <Rows>
-            <p>{area}</p>
+            <p>{`${city},${state}`}</p>
             <p>{country}</p>
           </Rows>
           <Rows>

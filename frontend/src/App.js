@@ -9,7 +9,8 @@ import Agents from "./pages/Agents";
 import Account from "./pages/Account";
 import Light from "./styles/theme";
 import Footer from "./components/Footer";
-import Property from "./pages/Property";
+import PropertyListing from "./pages/PropertyListing";
+import Tokenize from "./pages/Tokenize";
 
 const App = () => {
   return (
@@ -19,10 +20,11 @@ const App = () => {
         <Switch>
           <Route exact path="/" component={Home} />
           <Route exact path="/buy" component={Buy} />
-          <Route path="/buy/property/:id" component={Property} />
+          <Route path="/buy/property/:id" component={PropertyListing} />
           <Route path="/sell" component={Sell} />
           <Route path="/agents" component={Agents} />
           <Route path="/account" component={Account} />
+          <Route path="/tokenize" component={Tokenize} />
         </Switch>
         <Footer />
       </Router>

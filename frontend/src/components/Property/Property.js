@@ -1,42 +1,7 @@
 import React from "react";
 import styled from "styled-components";
-import { gql, useQuery } from "@apollo/client";
-import QueryResult from "../components/QueryResult";
 
-const GET_A_PROPERTY = gql`
-  query {
-    properties {
-      id
-      address
-      area
-      country
-      postalCode
-      price
-      beds
-      baths
-      bids
-      interiorSize
-      exteriorSize
-      mainImage
-      secondaryImage
-      owner {
-        id
-        name
-      }
-      agent {
-        id
-        name
-      }
-      amenities
-      features
-      parking
-      propertyTaxes
-    }
-  }
-`;
-
-const Property = ({ property, id }) => {
-  const { loading, error, data } = useQuery(GET_A_PROPERTY);
+const Property = ({ property }) => {
   const {
     address,
     area,
@@ -60,8 +25,8 @@ const Property = ({ property, id }) => {
 
   return (
     <Container>
-      <MainImage src={mainImage} alt={`property-${id}-image-1`} />
-      <SecondaryImage src={secondaryImage} alt={`property-${id}-image-2`} />
+      <MainImage src={mainImage} alt={`property-page-image-1`} />
+      <SecondaryImage src={secondaryImage} alt={`property-page-image-2`} />
     </Container>
   );
 };

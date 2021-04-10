@@ -26,7 +26,8 @@ const typeDefs = gql`
   type Property {
     id: ID!
     address: String!
-    area: String!
+    city: String!
+    state: String!
     country: String!
     postalCode: String!
     price: Float!
