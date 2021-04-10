@@ -9,7 +9,8 @@ const GET_ALL_PROPERTIES = gql`
     properties {
       id
       address
-      area
+      city
+      state
       country
       postalCode
       price

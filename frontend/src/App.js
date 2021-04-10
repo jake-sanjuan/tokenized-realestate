@@ -12,11 +12,11 @@ import Footer from "./components/Footer";
 import PropertyListing from "./pages/PropertyListing";
 import Tokenize from "./pages/Tokenize";
 
-const App = () => {
+const App = ({ client }) => {
   return (
     <ThemeProvider theme={Light}>
       <Router>
-        <NavBar />
+        <NavBar client={client} />
         <Switch>
           <Route exact path="/" component={Home} />
           <Route exact path="/buy" component={Buy} />

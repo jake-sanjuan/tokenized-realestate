@@ -2,10 +2,10 @@ import React from "react";
 import Container from "../components/Container";
 import TokenizeForm from "../components/TokenizeProperty/TokenizeForm";
 
-const Tokenize = () => {
+const Tokenize = ({ client }) => {
   return (
     <Container green>
-      <TokenizeForm />
+      <TokenizeForm client={client} />
     </Container>
   );
 };

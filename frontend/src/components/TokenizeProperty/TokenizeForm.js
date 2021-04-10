@@ -1,10 +1,43 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { getSigner } from "../../Main";
 
 const TokenizeForm = () => {
+  const [address, setAddress] = useState();
+
+  const ConnectWallet = () => {
+    getSigner()
+      .then((signer) => {
+        signer
+          .getAddress()
+          .then((add) => {
+            setAddress(add);
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
+
   return (
     <Form>
       <FormSection>
+        <p>
+          <label for="name">Wallet Address</label>
+        </p>
+        {!address && (
+          <>
+            <Address>Please connect your wallet.</Address>{" "}
+            <button type="button" onClick={() => ConnectWallet()}>
+              Connect Wallet
+            </button>
+          </>
+        )}
+
+        {address && <Address connected>{address}</Address>}
         <p>
           <label for="name">Name</label>
         </p>
@@ -20,7 +53,7 @@ const TokenizeForm = () => {
         </p>
         <input type="file" id="deed" />
         <p>
-          <label for="street-address">Address</label>
+          <label for="street-address">Property Address</label>
         </p>
         <input id="street-address" name="street-address" row="4" columns="50" />
         <Row>
@@ -69,11 +102,9 @@ const Form = styled.form`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
   p {
     font-size: 1rem;
-    :last-of-type {
-      width: 95%;
-    }
   }
 
   label {
@@ -189,16 +220,6 @@ const FormSection = styled.section`
   border: thin solid ${(props) => props.theme.white};
   width: 100%;
   margin: 2rem 0;
-  :last-of-type {
-    div {
-    }
-    p {
-      :last-of-type {
-        margin-bottom: 2rem;
-        width: 20%;
-      }
-    }
-  }
 `;
 
 const Row = styled.div`
@@ -240,4 +261,11 @@ const Row = styled.div`
       margin-right: 1rem;
     }
   }
+`;
+
+const Address = styled.p`
+  font-size: 1.2rem;
+  color: ${(props) =>
+    props.connected ? props.theme.lilac : props.theme.white};
+  margin-bottom: ${(props) => (props.connected ? "1rem" : 0)};
 `;

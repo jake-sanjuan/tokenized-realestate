@@ -1,49 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import LogoLine from "../assets/logo-line.png";
 import LogoFilled from "../assets/logo-filled.png";
-import { getSigner } from "../Main";
-import { utils } from "ethers";
+import Button from "./Button";
 
-const NavBar = () => {
+const NavBar = ({ client }) => {
   const [hover, setHover] = useState(false);
-  const [address, setAddress] = useState();
-
-  const ConnectWallet = () => {
-    getSigner()
-      .then((signer) => {
-        signer
-          .getAddress()
-          .then((add) => {
-            setAddress(add);
-          })
-          .catch((e) => {
-            console.log(e);
-          });
-        signer
-          .getBalance()
-          .then((bal) => {
-            console.log(
-              "Balance: " + utils.formatEther(bal.toString()) + " ETH"
-            );
-          })
-          .catch((e) => {
-            console.log(e);
-          });
-        signer
-          .getGasPrice()
-          .then((price) => {
-            console.log("Current Gas price: " + price.toNumber());
-          })
-          .catch((e) => {
-            console.log(e);
-          });
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-  };
 
   return (
     <Nav>
@@ -58,11 +21,9 @@ const NavBar = () => {
 
       <LinkGroup>
         <NavLink to="/buy">Buy</NavLink>
-        {address && <NavLink to="/tokenize">Tokenize</NavLink>}
-
-        {!address && (
-          <button onClick={() => ConnectWallet()}>Connect Wallet</button>
-        )}
+        <Button to="/tokenize" primarySmall>
+          Tokenize Property
+        </Button>
       </LinkGroup>
     </Nav>
   );

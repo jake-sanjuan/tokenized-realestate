@@ -58,12 +58,9 @@ const mocks = {
     bids: () => 21,
   }),
   User: () => ({
-    id: () => "user-01",
+    id: () => "user-1",
     name: () => "John Doe",
-    email: () => "email@gmail.com",
-    propertiesSelling: () => ["property-01"],
-    proofOfId: () =>
-      "https://images.pexels.com/photos/45113/pexels-photo-45113.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    tokenizedProperties: () => ["property-1"],
   }),
 };
 

@@ -3,14 +3,13 @@ import ReactDOM from "react-dom";
 import App from "./App";
 import { ApolloProvider, ApolloClient, InMemoryCache } from "@apollo/client";
 import GlobalStyle from "./styles/GlobalStyle";
-import { getSigner } from './Main';
-import { utils } from 'ethers';
-import { registerProperty, mintProperty, approveForSaleByOwner, payment, approveProperty} from "./Functions";
 import { makeQuery } from "./Query";
+
+const cache = new InMemoryCache();
 
 const client = new ApolloClient({
   uri: "http://localhost:4000",
-  cache: new InMemoryCache(),
+  cache: cache,
 });
 
 var query = `
@@ -34,7 +33,7 @@ var query = `
       id
     }
 }  
-`
+`;
 
 //approveProperty("0xcB07B63393C3c27bBE33fC9f6F476a8Dc469Dbbb").then((res)=>{console.log(res)})
 
@@ -54,13 +53,13 @@ var query = `
 //   .catch((e)=>{console.log(e)})
 
 makeQuery(query)
-  .then(data=>console.log(data))
-  .catch(e=>console.log(e))
+  .then((data) => console.log(data))
+  .catch((e) => console.log(e));
 
 ReactDOM.render(
   <ApolloProvider client={client}>
     <GlobalStyle />
-    <App />
+    <App client={client} />
   </ApolloProvider>,
   document.getElementById("root")
 );
