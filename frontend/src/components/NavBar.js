@@ -1,12 +1,48 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import Button from "./Button";
 import LogoLine from "../assets/logo-line.png";
 import LogoFilled from "../assets/logo-filled.png";
+import { getSigner } from "../Main";
+import { utils } from "ethers";
 
 const NavBar = () => {
   const [hover, setHover] = useState(false);
+
+  const ConnectWallet = () => {
+    getSigner()
+      .then((signer) => {
+        signer
+          .getAddress()
+          .then((add) => {
+            console.log("Address: " + add);
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+        signer
+          .getBalance()
+          .then((bal) => {
+            console.log(
+              "Balance: " + utils.formatEther(bal.toString()) + " ETH"
+            );
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+        signer
+          .getGasPrice()
+          .then((price) => {
+            console.log("Current Gas price: " + price.toNumber());
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
 
   return (
     <Nav>
@@ -22,9 +58,7 @@ const NavBar = () => {
       <LinkGroup>
         <NavLink to="/buy">Buy</NavLink>
         <NavLink to="/sell">Sell</NavLink>
-        <Button to="/account" secondary>
-          Connect Wallet
-        </Button>
+        <button onClick={() => ConnectWallet()}>Connect Wallet</button>
       </LinkGroup>
     </Nav>
   );
