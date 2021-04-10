@@ -1,11 +1,14 @@
 import { getSigner, getContract } from './Main'
 //import { ethers, utils } from 'ethers';
-import abi from './Tokenizer';
-const contractAddress = "0xD02C513472A7BA8ca4532642f390DdBA4249516E";
+import { abi, abiBridge } from './Tokenizer';
+//const contractAddress = "0xD02C513472A7BA8ca4532642f390DdBA4249516E";
+//const contractAddress = "0x9845358d820A76aacAd89aCc85093fD9B14F7df8";
+const contractAddress = "0xF972aa1d30d22794F90744512cEd70aDC0B9D424"
+
 
 var _getContract = async ()=>{
     try{
-        return await getContract(contractAddress, abi, await getSigner())
+        return await getContract(contractAddress, abiBridge, await getSigner())
     }
     catch(e){
         return e;
@@ -14,10 +17,32 @@ var _getContract = async ()=>{
 
 //Owner functions
 
-export var registerProperty = async (propertyOwner, propertyAddress, salt, currentPrice)=>{
+export var initialize = async () =>{
     try{
         let contract = await _getContract()
-        return await contract.registerProperty(propertyOwner, propertyAddress, salt, currentPrice)
+        return await contract.initialize()
+    }
+    catch(e){
+        return e;
+    }
+}
+
+export var numAgent = async (addr) =>{
+    try{
+        let contract = await _getContract()
+        return await contract.numAgentApprovals(addr)
+    }
+    catch(e){
+        return e;
+    }
+}
+
+
+
+export var registerProperty = async (propertyOwner, propertyAddress, salt, currentPrice, propertyOwnerAddr)=>{
+    try{
+        let contract = await _getContract()
+        return await contract.registerProperty(propertyOwner, propertyAddress, salt, currentPrice, propertyOwnerAddr)
     }
     catch(e){
         return e;
@@ -55,10 +80,10 @@ export var payment = async (tokenId, propertyOwner)=>{
     }
 }
 
-export var changeOwner = async (newOwnerName, salt, tokenId)=>{
+export var changeOwner = async (newOwnerName, propertyName, salt, tokenId)=>{
     try{
         let contract = await _getContract()
-        return await contract.changeOwner(newOwnerName, salt, tokenId)
+        return await contract.changeOwner(newOwnerName, propertyName, salt, tokenId)
     }
     catch(e){
         return e;
@@ -80,6 +105,7 @@ export var burn = async (tokenId)=>{
 export var approveProperty = async (propertyOwner)=>{
     try{
         let contract = await _getContract()
+        
         return await contract.approveProperty(propertyOwner)
     }
     catch(e){
@@ -100,6 +126,7 @@ export var sell = async (fromAddress, toAddress, tokenId)=>{
 export var agentApproval = async (toBeApproved)=>{
     try{
         let contract = await _getContract()
+        console.log(contract)
         return await contract.agentApproval(toBeApproved)
     }
     catch(e){
@@ -109,10 +136,10 @@ export var agentApproval = async (toBeApproved)=>{
 
 //Both functions
 
-export var changeCurrentPrice = async (toBeApproved)=>{
+export var changeCurrentPrice = async (propertyOwner, tokenId, newPrice)=>{
     try{
         let contract = await _getContract()
-        return await contract.changeCurrentPrice(toBeApproved)
+        return await contract.changeCurrentPrice(propertyOwner, tokenId, newPrice)
     }
     catch(e){
         return e;
@@ -121,30 +148,30 @@ export var changeCurrentPrice = async (toBeApproved)=>{
 
 //Anyone
 
-export var approvePropertyOwner = async (ownerName, url, path, potentialOwner)=>{
+export var approveOwner = async (ownerName, addr,  url, namePath, addrPath, potentialOwner)=>{
     try{
         let contract = await _getContract()
-        return await contract.approvePropertyOwner(ownerName, url, path, potentialOwner)
+        return await contract.approveOwner(ownerName, addr,  url, namePath, addrPath, potentialOwner)
     }
     catch(e){
         return e;
     }
 }
 
-export var approveLicense = async (agentName, url, path, potentialAgent)=>{
+export var approveLicense = async (agentName, addr,  url, namePath, addrPath, potentialAgent)=>{
     try{
         let contract = await _getContract()
-        return await contract.approveLicense(agentName, url, path, potentialAgent)
+        return await contract.approveLicense(agentName, addr,  url, namePath, addrPath, potentialAgent)
     }
     catch(e){
         return e;
     }
 }
 
-export var homeValueEthToUsd = async (homeValueInEther)=>{
+export var checkHomePriceInUsd = async (priceInEther)=>{
     try{
         let contract = await _getContract()
-        return await contract.homeValueEthToUsd(homeValueInEther)
+        return await contract.checkHomePriceInUsd(priceInEther)
     }
     catch(e){
         return e;
