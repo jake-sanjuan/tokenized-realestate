@@ -1,9 +1,9 @@
 {
   "manifestVersion": "3.1",
   "impls": {
-    "232620131a5a6f8eac563c08e7107799f156d6a1a1d038bb51a31b78fe40b38c": {
+    "f48600e2a8c6027d99cd76864003d4094fb546286a83bcec798178f52e1dbd24": {
       "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-      "txHash": "0x2885ab7c0de768c1d10cf04f017616b082af50e9ff7e3364d166be0aecb4fa2f",
+      "txHash": "0x025e2b1a76b8ce5efe129c3a18351667f4508e84a6222f92f55394a40cd4179d",
       "layout": {
         "storage": [
           {
@@ -147,7 +147,7 @@
           {
             "contract": "Bridge",
             "label": "linkQueries",
-            "type": "t_contract(BridgeLinkQueries)5620",
+            "type": "t_contract(BridgeLinkQueries)5635",
             "src": "contracts/Bridge.sol:56"
           }
         ],
@@ -218,7 +218,7 @@
           "t_mapping(t_uint256,t_struct(Property)4481_storage)": {
             "label": "mapping(uint256 => struct Bridge.Property)"
           },
-          "t_contract(BridgeLinkQueries)5620": {
+          "t_contract(BridgeLinkQueries)5635": {
             "label": "contract BridgeLinkQueries"
           },
           "t_mapping(t_address,t_struct(UintSet)4244_storage)": {
