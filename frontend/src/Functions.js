@@ -1,13 +1,14 @@
 import { getSigner, getContract } from "./Main";
 //import { ethers, utils } from 'ethers';
 import { abiBridge } from "./Tokenizer";
+import Bridge from "./abi/Bridge.json";
 //const contractAddress = "0xD02C513472A7BA8ca4532642f390DdBA4249516E";
 //const contractAddress = "0x9845358d820A76aacAd89aCc85093fD9B14F7df8";
 const contractAddress = "0xF972aa1d30d22794F90744512cEd70aDC0B9D424";
 
 var _getContract = async () => {
   try {
-    return await getContract(contractAddress, abiBridge, await getSigner());
+    return await getContract(contractAddress, Bridge, await getSigner());
   } catch (e) {
     return e;
   }

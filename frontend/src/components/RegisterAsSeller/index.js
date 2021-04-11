@@ -1,21 +1,24 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { ethers } from "ethers";
+import { ethers, utils } from "ethers";
 import Bridge from "../../abi/Bridge.json";
-import { getSigner } from "../../Main";
+// import { abi } from "../../Tokenizer";
+import { getSigner, getContract } from "../../Main";
 
 const RegisterAsSellerForm = () => {
-  const contractAddress = "0x1f17277D75EDE085b83b26416a13b24abC32DD9d";
-  const [walletAddress, setWalletAddress] = useState();
+  // const contractAddress = "0x1f17277D75EDE085b83b26416a13b24abC32DD9d";
+  const contractAddress = "0xD02C513472A7BA8ca4532642f390DdBA4249516E";
+  const [walletAddress, setWalletAddress] = useState("");
   const [name, setName] = useState("");
-  const [address, setAddress] = useState();
+  const [address, setAddress] = useState("");
 
-  let potentialOwner = "amiee mccloskey";
-  let ownerName = name;
-  // const addr = utils.formatBytes32String("3445 hunter st");
+  let potentialOwner = walletAddress;
+  let ownerName = utils.formatBytes32String(name);
+
+  // const addr = utils.formatBytes32String(address);
   const url = "http://9ef75e605f77.ngrok.io/owners";
   const namePath = `owner.${name}`;
-  // const addrPath = "owner.amiee mccloskey.3445 hunter st";
+  // const addrPath = `owner.${name}.${address}`;
   // const myAddr = utils.getAddress("0xcB07B63393C3c27bBE33fC9f6F476a8Dc469Dbbb");
   // const agentName = utils.formatBytes32String("william zhang");
 
@@ -37,21 +40,41 @@ const RegisterAsSellerForm = () => {
   };
 
   const SubmitToContract = async (ownerName, url, namePath, potentialOwner) => {
-    if (!address) return;
-    if (window.ethereum !== undefined) {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      const contract = new ethers.Contract(contractAddress, Bridge.abi, signer);
+    console.log("ownerName", ownerName);
+    console.log("url", url);
+    console.log("namePath", namePath);
+    console.log("potentialOwner", potentialOwner);
+
+    try {
+      // const provider = new ethers.providers.Web3Provider(window.ethereum);
+      // const signer = provider.getSigner();
+      // const contract = new ethers.Contract(contractAddress, Bridge.abi, signer);
+      // let walletAddress = signer.getAddress().then((add) => {
+      //   setWalletAddress(add);
+      // });
+      let contract = await getContract(
+        contractAddress,
+        Bridge.abi,
+        await getSigner()
+      );
+      console.log(contract);
       const transaction = await contract.approveOwner(
         ownerName,
         url,
         namePath,
-        potentialOwner
+        walletAddress
       );
-      await transaction.wait();
-      fetchOwner();
+      let result = await transaction.wait();
+      console.log(result);
+      // fetchOwner();
+    } catch (e) {
+      console.log(e);
     }
   };
+
+  // const requestAccount = async () => {
+  //   await window.ethereum.request({ method: "eth_requestAccounts" });
+  // };
 
   const ConnectWallet = () => {
     getSigner()
