@@ -1,18 +1,121 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
+import { ethers } from "ethers";
+import Bridge from "../../abi/Bridge.json";
+import { getSigner } from "../../Main";
 
-const TokenizeForm = () => {
+const RegisterAsSellerForm = () => {
+  const contractAddress = "0x1f17277D75EDE085b83b26416a13b24abC32DD9d";
+  const [walletAddress, setWalletAddress] = useState();
+  const [name, setName] = useState("");
+  const [address, setAddress] = useState();
+
+  let potentialOwner = "amiee mccloskey";
+  let ownerName = name;
+  // const addr = utils.formatBytes32String("3445 hunter st");
+  const url = "http://9ef75e605f77.ngrok.io/owners";
+  const namePath = `owner.${name}`;
+  // const addrPath = "owner.amiee mccloskey.3445 hunter st";
+  // const myAddr = utils.getAddress("0xcB07B63393C3c27bBE33fC9f6F476a8Dc469Dbbb");
+  // const agentName = utils.formatBytes32String("william zhang");
+
+  const fetchOwner = async () => {
+    if (window.ethereum !== undefined) {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const contract = new ethers.Contract(
+        contractAddress,
+        Bridge.abi,
+        provider
+      );
+      try {
+        const data = await contract.approveOwner();
+        console.log("data: ", data);
+      } catch (err) {
+        console.log("Error: ", err);
+      }
+    }
+  };
+
+  const SubmitToContract = async (ownerName, url, namePath, potentialOwner) => {
+    if (!address) return;
+    if (window.ethereum !== undefined) {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const contract = new ethers.Contract(contractAddress, Bridge.abi, signer);
+      const transaction = await contract.approveOwner(
+        ownerName,
+        url,
+        namePath,
+        potentialOwner
+      );
+      await transaction.wait();
+      fetchOwner();
+    }
+  };
+
+  const ConnectWallet = () => {
+    getSigner()
+      .then((signer) => {
+        signer
+          .getAddress()
+          .then((add) => {
+            setWalletAddress(add);
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
+
+  const submitData = (e) => {
+    e.preventDefault();
+    SubmitToContract(ownerName, url, namePath, potentialOwner);
+  };
+
   return (
-    <Form>
+    <Form onSubmit={submitData}>
       <FormSection>
         <p>
-          <label htmlFor="deed">Deed</label>
+          <label htmlFor="name">Wallet Address</label>
         </p>
-        <input type="file" id="deed" />
+        {!walletAddress && (
+          <>
+            <Address>Please connect your wallet.</Address>{" "}
+            <button type="button" onClick={() => ConnectWallet()}>
+              Connect Wallet
+            </button>
+          </>
+        )}
+
+        {walletAddress && <Address connected>{walletAddress}</Address>}
         <p>
-          <label htmlFor="street-address">Property Address</label>
+          <label htmlFor="name">Name</label>
         </p>
-        <input id="street-address" name="street-address" row="4" columns="50" />
+        <input
+          type="text"
+          id="name"
+          name="owner_name"
+          onChange={(e) => setName(e.target.value)}
+        />
+        <p>
+          <label htmlFor="id">Proof of ID</label>
+        </p>
+        <input type="file" id="id" />
+      </FormSection>
+      <FormSection>
+        <p>
+          <label htmlFor="street-address">Address</label>
+        </p>
+        <input
+          id="street-address"
+          name="street-address"
+          row="4"
+          columns="50"
+          onChange={(e) => setAddress(e.target.value)}
+        />
         <Row>
           <div>
             <p>
@@ -43,22 +146,23 @@ const TokenizeForm = () => {
         </Row>
       </FormSection>
       <p>
-        By clicking TOKENIZE PROPERTY, <br />I agree to the following: <br />
-        I) I am the owner of this home. <br />
+        By clicking REGISTER AS SELLER, <br />I agree to the following: <br />
+        I) I am using my own identity. <br />
         II) I will comply with Bridges Terms of Use.
       </p>
-      <button>Tokenize Property</button>
+      <button onClick={submitData}>Register As Seller</button>
     </Form>
   );
 };
 
-export default TokenizeForm;
+export default RegisterAsSellerForm;
 
 const Form = styled.form`
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  min-width: 840px;
 
   p {
     font-size: 1rem;
@@ -220,9 +324,9 @@ const Row = styled.div`
   }
 `;
 
-// const Address = styled.p`
-//   font-size: 1.2rem;
-//   color: ${(props) =>
-//     props.connected ? props.theme.lilac : props.theme.white};
-//   margin-bottom: ${(props) => (props.connected ? "1rem" : 0)};
-// `;
+const Address = styled.p`
+  font-size: 1.2rem;
+  color: ${(props) =>
+    props.connected ? props.theme.lilac : props.theme.white};
+  margin-bottom: ${(props) => (props.connected ? "1rem" : 0)};
+`;
