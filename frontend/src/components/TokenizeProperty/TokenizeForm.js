@@ -5,17 +5,20 @@ import Bridge from "../../abi/Bridge.json";
 import { getSigner, getContract } from "../../Main";
 
 const TokenizeForm = () => {
-  // const contractAddress = "0x1f17277D75EDE085b83b26416a13b24abC32DD9d";
-  const contractAddress = "0xD02C513472A7BA8ca4532642f390DdBA4249516E";
+  const contractAddress = "0x1f17277D75EDE085b83b26416a13b24abC32DD9d";
+  // const contractAddress = "0xD02C513472A7BA8ca4532642f390DdBA4249516E";
   const [walletAddress, setWalletAddress] = useState();
+
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [pin, setPin] = useState();
   const [price, setPrice] = useState();
+  // const [returned, setReturned] = useState();
 
+  let propOwner = "0x6cd26899F49D1bBfbEC3c1bB6B3716C866033147";
   let potentialOwner = walletAddress;
-  let ownerName = name;
-  const addr = address;
+  let ownerName = utils.formatBytes32String(name);
+  const addr = utils.formatBytes32String(address);
   const url = "http://9ef75e605f77.ngrok.io/owners";
   const namePath = `owner.${name}`;
   const addrPath = `owner.${name}.${address}`;
@@ -38,6 +41,8 @@ const TokenizeForm = () => {
       //   setWalletAddress(add);
       // });
 
+      console.log("ownerName", ownerName);
+      console.log("addr", addr);
       console.log("pin", pin);
       console.log("desiredPrice", desiredPrice);
       console.log("walletAddress", walletAddress);
@@ -48,15 +53,15 @@ const TokenizeForm = () => {
       );
       console.log(contract);
 
-      // let transaction = await contract.registerProperty(
-      //   ownerName,
-      //   addr,
-      //   pin,
-      //   desiredPrice,
-      //   walletAddress
-      // );
+      let transaction = await contract.registerProperty(
+        ownerName,
+        addr,
+        pin,
+        desiredPrice,
+        walletAddress
+      );
 
-      let transaction = await contract.approveProperty(walletAddress);
+      // let transaction = await contract.approveProperty(propOwner);
       // let result = await transaction.wait();
       // console.log("result", result);
 
@@ -69,8 +74,10 @@ const TokenizeForm = () => {
 
       // let transaction = await contract.numAgentApprovals(walletAddress);
 
-      // let result = await transaction.wait();
-      console.log("transactio", transaction);
+      let receipt = await transaction.wait();
+      let events = receipt.events;
+      console.log("events", events);
+      // setReturned(transaction);
     } catch (e) {
       console.log(e);
     }
@@ -114,6 +121,8 @@ const TokenizeForm = () => {
         )}
 
         {walletAddress && <Address connected>{walletAddress}</Address>}
+
+        <p>Transaction</p>
       </FormSection>
       <FormSection>
         <p>
@@ -238,6 +247,13 @@ const Form = styled.form`
     }
 
     ::focus {
+      outline: none;
+      border: none;
+      background-color: ${(props) => props.theme.green};
+      border-bottom: thin solid ${(props) => props.theme.neon};
+    }
+
+    ::autofill {
       outline: none;
       border: none;
       background-color: ${(props) => props.theme.green};

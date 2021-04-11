@@ -7,7 +7,8 @@ import { getSigner, getContract } from "../../Main";
 
 const RegisterAsSellerForm = () => {
   // const contractAddress = "0x1f17277D75EDE085b83b26416a13b24abC32DD9d";
-  const contractAddress = "0xD02C513472A7BA8ca4532642f390DdBA4249516E";
+  // const contractAddress = "0xD02C513472A7BA8ca4532642f390DdBA4249516E";
+  const contractAddress = "0x471db3bA8639Ce1C1F682b023A576746AE23F435";
   const [walletAddress, setWalletAddress] = useState("");
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
@@ -223,6 +224,12 @@ const Form = styled.form`
     }
 
     ::focus {
+      outline: none;
+      border: none;
+      background-color: ${(props) => props.theme.green};
+      border-bottom: thin solid ${(props) => props.theme.neon};
+    }
+    ::autofill {
       outline: none;
       border: none;
       background-color: ${(props) => props.theme.green};
