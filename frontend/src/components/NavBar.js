@@ -21,7 +21,6 @@ const NavBar = ({ client }) => {
 
       <LinkGroup>
         <NavLink to="/buy">Buy</NavLink>
-        <NavLink to="/register/seller">Become a Seller</NavLink>
         <Button to="/tokenize">Tokenize Property</Button>
       </LinkGroup>
     </Nav>

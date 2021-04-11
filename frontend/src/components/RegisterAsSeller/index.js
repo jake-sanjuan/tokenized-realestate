@@ -2,12 +2,9 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { ethers, utils } from "ethers";
 import Bridge from "../../abi/Bridge.json";
-// import { abi } from "../../Tokenizer";
 import { getSigner, getContract } from "../../Main";
 
 const RegisterAsSellerForm = () => {
-  // const contractAddress = "0x1f17277D75EDE085b83b26416a13b24abC32DD9d";
-  // const contractAddress = "0xD02C513472A7BA8ca4532642f390DdBA4249516E";
   const contractAddress = "0x471db3bA8639Ce1C1F682b023A576746AE23F435";
   const [walletAddress, setWalletAddress] = useState("");
   const [name, setName] = useState("");
@@ -16,12 +13,8 @@ const RegisterAsSellerForm = () => {
   let potentialOwner = walletAddress;
   let ownerName = utils.formatBytes32String(name);
 
-  // const addr = utils.formatBytes32String(address);
   const url = "http://9ef75e605f77.ngrok.io/owners";
   const namePath = `owner.${name}`;
-  // const addrPath = `owner.${name}.${address}`;
-  // const myAddr = utils.getAddress("0xcB07B63393C3c27bBE33fC9f6F476a8Dc469Dbbb");
-  // const agentName = utils.formatBytes32String("william zhang");
 
   const fetchOwner = async () => {
     if (window.ethereum !== undefined) {
@@ -67,7 +60,6 @@ const RegisterAsSellerForm = () => {
       );
       let result = await transaction.wait();
       console.log(result);
-      // fetchOwner();
     } catch (e) {
       console.log(e);
     }

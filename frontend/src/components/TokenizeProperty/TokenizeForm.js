@@ -1,19 +1,24 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { useHistory } from "react-router-dom";
 import { ethers, utils } from "ethers";
 import Bridge from "../../abi/Bridge.json";
 import { getSigner, getContract } from "../../Main";
 
 const TokenizeForm = () => {
-  const contractAddress = "0x1f17277D75EDE085b83b26416a13b24abC32DD9d";
+  const contractAddress = "0x471db3bA8639Ce1C1F682b023A576746AE23F435";
+  // const contractAddress = "0x1f17277D75EDE085b83b26416a13b24abC32DD9d";
   // const contractAddress = "0xD02C513472A7BA8ca4532642f390DdBA4249516E";
   const [walletAddress, setWalletAddress] = useState();
-
+  const [postalCode, setPostalCode] = useState();
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [pin, setPin] = useState();
-  const [price, setPrice] = useState();
-  // const [returned, setReturned] = useState();
+  const [price, setPrice] = useState(100);
+  const [eth, setEth] = useState();
+  const [token, setToken] = useState();
+
+  const history = useHistory();
 
   let propOwner = "0x6cd26899F49D1bBfbEC3c1bB6B3716C866033147";
   let potentialOwner = walletAddress;
@@ -22,17 +27,11 @@ const TokenizeForm = () => {
   const url = "http://9ef75e605f77.ngrok.io/owners";
   const namePath = `owner.${name}`;
   const addrPath = `owner.${name}.${address}`;
-  const desiredPrice = price;
+  const desiredPrice = price + "00000000000000000000000000";
   // const myAddr = utils.getAddress("0xcB07B63393C3c27bBE33fC9f6F476a8Dc469Dbbb");
   // const agentName = utils.formatBytes32String("william zhang");
 
-  const SubmitToContract = async (
-    ownerName,
-    addr,
-    pin,
-    desiredPrice,
-    walletAddress
-  ) => {
+  const SubmitToContract = async (walletAddress, addr, postalCode) => {
     try {
       // const provider = new ethers.providers.Web3Provider(window.ethereum);
       // const signer = provider.getSigner();
@@ -41,11 +40,9 @@ const TokenizeForm = () => {
       //   setWalletAddress(add);
       // });
 
-      console.log("ownerName", ownerName);
-      console.log("addr", addr);
-      console.log("pin", pin);
-      console.log("desiredPrice", desiredPrice);
       console.log("walletAddress", walletAddress);
+      console.log("addr", addr);
+      console.log("postalCode", postalCode);
       let contract = await getContract(
         contractAddress,
         Bridge.abi,
@@ -54,30 +51,15 @@ const TokenizeForm = () => {
       console.log(contract);
 
       let transaction = await contract.registerProperty(
-        ownerName,
+        walletAddress,
         addr,
-        pin,
-        desiredPrice,
-        walletAddress
+        postalCode
       );
-
-      // let transaction = await contract.approveProperty(propOwner);
-      // let result = await transaction.wait();
-      // console.log("result", result);
-
-      // let transaction = await contract.mintProperty(
-      //   tokenId,
-      //   walletAddress,
-      //   addr,
-      //   pin
-      // );
-
-      // let transaction = await contract.numAgentApprovals(walletAddress);
 
       let receipt = await transaction.wait();
       let events = receipt.events;
       console.log("events", events);
-      // setReturned(transaction);
+      history.push("/claim");
     } catch (e) {
       console.log(e);
     }
@@ -100,106 +82,118 @@ const TokenizeForm = () => {
       });
   };
 
+  const getPriceInEth = async (desiredPrice) => {
+    let contract = await getContract(
+      contractAddress,
+      Bridge.abi,
+      await getSigner()
+    );
+    console.log("price", price);
+    console.log("desiredPrice", desiredPrice);
+    let transaction = await contract.homeValueInEther(desiredPrice);
+    setEth(utils.formatEther(transaction.toString()));
+  };
+
   const submitData = (e) => {
     e.preventDefault();
-    SubmitToContract(ownerName, addr, pin, desiredPrice, walletAddress);
+    SubmitToContract(walletAddress, addr, postalCode);
   };
 
   return (
-    <Form onSubmit={SubmitToContract}>
-      <FormSection>
-        <p>
-          <label htmlFor="name">Wallet Address</label>
-        </p>
-        {!walletAddress && (
-          <>
-            <Address>Please connect your wallet.</Address>{" "}
-            <button type="button" onClick={() => ConnectWallet()}>
-              Connect Wallet
-            </button>
-          </>
-        )}
-
-        {walletAddress && <Address connected>{walletAddress}</Address>}
-
-        <p>Transaction</p>
-      </FormSection>
-      <FormSection>
-        <p>
-          <label htmlFor="name">Name</label>
-        </p>
-        <input
-          id="name"
-          name="name"
-          onChange={(e) => setName(e.target.value)}
-        />
-        <p>
-          <label htmlFor="pin">Choose A Pin</label>
-        </p>
-        <input
-          type="password"
-          id="pin"
-          name="pin"
-          onChange={(e) => setPin(e.target.value)}
-        />
-        <p>
-          <label htmlFor="deed">Deed</label>
-        </p>
-        <input type="file" id="deed" />
-
-        <p>
-          <label htmlFor="street-address">Property Address</label>
-        </p>
-        <input
-          id="street-address"
-          name="street-address"
-          onChange={(e) => setAddress(e.target.value)}
-        />
-        <Row>
-          <div>
+    <>
+      {token && (
+        <>
+          <h2>Claim your tokens</h2>
+          <h6>1. Copy this address:</h6>
+          <p>{contractAddress}</p>
+        </>
+      )}
+      {!token && (
+        <Form onSubmit={SubmitToContract}>
+          <FormSection>
             <p>
-              <label htmlFor="city">City</label>
+              <label htmlFor="name">Wallet Address</label>
             </p>
-            <input type="text" id="city" name="city" />
-          </div>
-          <div>
+            {!walletAddress && (
+              <>
+                <Address>Please connect your wallet.</Address>{" "}
+                <button type="button" onClick={() => ConnectWallet()}>
+                  Connect Wallet
+                </button>
+              </>
+            )}
+
+            {walletAddress && (
+              <>
+                <Address connected>{walletAddress}</Address>
+                <button type="button" onClick={() => ConnectWallet()}>
+                  Change Account
+                </button>
+              </>
+            )}
+          </FormSection>
+          <FormSection>
             <p>
-              <label htmlFor="state">State or Province</label>
+              <label htmlFor="price">Desired Sale Price</label>
             </p>
-            <input type="text" id="state" name="state" />
-          </div>
-        </Row>
-        <Row>
-          <div>
+            <input
+              type="number"
+              id="price"
+              name="price"
+              onChange={(e) => setPrice(e.target.value)}
+            />
+            {eth && (
+              <>
+                <Address connected>You will earn {eth}ETH.</Address>
+                <button
+                  type="button"
+                  onClick={() => getPriceInEth(desiredPrice)}
+                >
+                  Check Price
+                </button>
+              </>
+            )}
+            {!eth && (
+              <>
+                <Address>Check your desired price in ETH.</Address>{" "}
+                <button
+                  type="button"
+                  onClick={() => getPriceInEth(desiredPrice)}
+                >
+                  Check Price
+                </button>
+              </>
+            )}
+          </FormSection>
+          <FormSection>
             <p>
-              <label htmlFor="country">Country</label>
+              <label htmlFor="street-address">Property Address</label>
             </p>
-            <input type="text" id="country" name="country" />
-          </div>
-          <div>
+            <input
+              id="street-address"
+              name="street-address"
+              onChange={(e) => setAddress(e.target.value)}
+            />
             <p>
               <label htmlFor="postal-code">Postal Code</label>
             </p>
-            <input type="text" id="postal-code" name="postal-code" />
-          </div>
-        </Row>
-        <p>
-          <label htmlFor="price">Desired Sale Price</label>
-        </p>
-        <input
-          type="number"
-          id="price"
-          name="price"
-          onChange={(e) => setPrice(e.target.value)}
-        />
-      </FormSection>
-      <p>
-        By clicking TOKENIZE PROPERTY, <br />I agree to the following: <br />
-        I) I am the owner of this home. <br />
-        II) I will comply with Bridges Terms of Use.
-      </p>
-      <button onClick={submitData}>Tokenize Property</button>
-    </Form>
+            <input
+              type="number"
+              id="postal-code"
+              name="postal-code"
+              onChange={(e) => setPostalCode(e.target.value)}
+            />
+          </FormSection>
+          <p>
+            By clicking TOKENIZE PROPERTY, <br />I agree to the following:{" "}
+            <br />
+            I) I am the owner of this home. <br />
+            II) I will comply with Bridges Terms of Use.
+          </p>
+          <button onClick={submitData}>Tokenize Property</button>
+        </Form>
+      )}
+    </>
   );
 };
 

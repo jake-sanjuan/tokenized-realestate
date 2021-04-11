@@ -12,6 +12,7 @@ import Footer from "./components/Footer";
 import PropertyListing from "./pages/PropertyListing";
 import Tokenize from "./pages/Tokenize";
 import RegisterAsSeller from "./pages/RegisterAsSeller";
+import Instructions from "./pages/Instructions";
 
 const App = ({ client }) => {
   return (
@@ -27,6 +28,7 @@ const App = ({ client }) => {
           <Route path="/account" component={Account} />
           <Route path="/tokenize" component={Tokenize} />
           <Route exact path="/register/seller" component={RegisterAsSeller} />
+          <Route exact path="/claim" component={Instructions} />
         </Switch>
         <Footer />
       </Router>
